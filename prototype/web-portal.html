@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Interactive Surya Sai Solar sales manager portal prototype"
+    />
+    <title>Sales Command Center · Surya Sai Solar</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="web-app">
+    <svg class="sr-only" aria-hidden="true">
+      <symbol id="i-grid" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="7" rx="2"></rect>
+        <rect x="14" y="3" width="7" height="7" rx="2"></rect>
+        <rect x="3" y="14" width="7" height="7" rx="2"></rect>
+        <rect x="14" y="14" width="7" height="7" rx="2"></rect>
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </symbol>
+      <symbol id="i-filter" viewBox="0 0 24 24">
+        <path d="M4 4h16l-6 7v6l-4 2v-8z"></path>
+      </symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24">
+        <path d="M3 3v18h18"></path>
+        <path d="m7 16 4-5 3 3 5-7"></path>
+      </symbol>
+      <symbol id="i-zap" viewBox="0 0 24 24">
+        <path d="M13 2 3 14h9l-1 8 10-12h-9z"></path>
+      </symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1 1.55V21h-4v-.08a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3v-4h.08a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3h4v.08a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.12.6.6 1 1.2 1H21v4h-.4c-.6 0-1.08.4-1.2 1Z"></path>
+      </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24">
+        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+        <path d="M13.7 21a2 2 0 0 1-3.4 0"></path>
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14"></path>
+      </symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.33 1.84.56 2.8.69A2 2 0 0 1 22 16.92Z"></path>
+      </symbol>
+      <symbol id="i-message" viewBox="0 0 24 24">
+        <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+      </symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+        <path d="M16 3v4M8 3v4M3 11h18"></path>
+      </symbol>
+      <symbol id="i-more" viewBox="0 0 24 24">
+        <circle cx="5" cy="12" r="1"></circle>
+        <circle cx="12" cy="12" r="1"></circle>
+        <circle cx="19" cy="12" r="1"></circle>
+      </symbol>
+      <symbol id="i-x" viewBox="0 0 24 24">
+        <path d="m18 6-12 12M6 6l12 12"></path>
+      </symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24">
+        <path d="m9 18 6-6-6-6"></path>
+      </symbol>
+      <symbol id="i-download" viewBox="0 0 24 24">
+        <path d="M12 3v12m0 0 4-4m-4 4-4-4"></path>
+        <path d="M4 19h16"></path>
+      </symbol>
+    </svg>
+
+    <div class="web-shell">
+      <aside class="web-sidebar">
+        <a class="web-brand" href="index.html" aria-label="Prototype home">
+          <span class="web-brand-symbol">S</span>
+          <span>
+            <strong>Surya Sai Solar</strong>
+            <small>Sales command</small>
+          </span>
+        </a>
+
+        <button class="workspace-switch" id="workspaceSwitch" type="button">
+          <svg class="icon icon-sm"><use href="#i-grid"></use></svg>
+          <span>
+            <small>Workspace</small>
+            <b id="workspaceName">Hyderabad Central</b>
+          </span>
+          <svg class="icon icon-sm"><use href="#i-chevron"></use></svg>
+        </button>
+
+        <nav class="web-nav" aria-label="Primary navigation">
+          <span class="nav-label">Workspace</span>
+          <button class="nav-item active" data-view="dashboard" type="button">
+            <svg class="icon"><use href="#i-grid"></use></svg>
+            Command center
+          </button>
+          <button class="nav-item" data-view="leads" type="button">
+            <svg class="icon"><use href="#i-users"></use></svg>
+            Leads
+            <span class="nav-count">28</span>
+          </button>
+          <button class="nav-item" data-view="pipeline" type="button">
+            <svg class="icon"><use href="#i-filter"></use></svg>
+            Pipeline
+          </button>
+          <button class="nav-item" data-view="team" type="button">
+            <svg class="icon"><use href="#i-chart"></use></svg>
+            Team activity
+          </button>
+
+          <span class="nav-label">Control</span>
+          <button class="nav-item" data-view="automation" type="button">
+            <svg class="icon"><use href="#i-zap"></use></svg>
+            Automation
+          </button>
+          <button class="nav-item" data-view="settings" type="button">
+            <svg class="icon"><use href="#i-settings"></use></svg>
+            Workspace settings
+          </button>
+        </nav>
+
+        <div class="sidebar-profile">
+          <span class="avatar">NS</span>
+          <span>
+            <strong>Niladri Saha</strong>
+            <small>Workspace manager</small>
+          </span>
+        </div>
+      </aside>
+
+      <main class="web-main">
+        <header class="web-topbar">
+          <label class="global-search">
+            <svg class="icon icon-sm"><use href="#i-search"></use></svg>
+            <input
+              id="globalSearch"
+              type="search"
+              placeholder="Search lead, phone or owner…"
+            />
+          </label>
+          <div class="topbar-spacer"></div>
+          <div class="topbar-actions">
+            <button
+              class="btn-icon notification-dot"
+              id="notificationButton"
+              type="button"
+              aria-label="Notifications"
+            >
+              <svg class="icon"><use href="#i-bell"></use></svg>
+            </button>
+            <button class="btn btn-primary" data-open-modal="newLead" type="button">
+              <svg class="icon icon-sm"><use href="#i-plus"></use></svg>
+              New lead
+            </button>
+          </div>
+        </header>
+
+        <div class="web-content">
+          <section class="view active" id="view-dashboard">
+            <header class="page-heading">
+              <div>
+                <p class="eyebrow">Wednesday, 19 August</p>
+                <h1>Good afternoon, Niladri</h1>
+                <p>Your team has 9 actions at risk of missing today’s SLA.</p>
+              </div>
+              <div class="page-actions">
+                <button class="btn btn-secondary" type="button" id="exportButton">
+                  <svg class="icon icon-sm"><use href="#i-download"></use></svg>
+                  Export
+                </button>
+                <button class="btn btn-dark" data-view-target="leads" type="button">
+                  Review priority queue
+                </button>
+              </div>
+            </header>
+
+            <div class="metric-grid">
+              <article class="metric-card">
+                <p class="metric-label">New leads today</p>
+                <span class="metric-value">28</span>
+                <span class="metric-delta">↑ 18%</span>
+              </article>
+              <article class="metric-card danger">
+                <p class="metric-label">Awaiting first touch</p>
+                <span class="metric-value">09</span>
+                <span class="metric-delta down">3 overdue</span>
+              </article>
+              <article class="metric-card warning">
+                <p class="metric-label">Follow-ups due</p>
+                <span class="metric-value">17</span>
+                <span class="metric-delta">84% complete</span>
+              </article>
+              <article class="metric-card blue">
+                <p class="metric-label">Qualified this week</p>
+                <span class="metric-value">42</span>
+                <span class="metric-delta">↑ 7%</span>
+              </article>
+            </div>
+
+            <div class="dashboard-grid">
+              <article class="panel">
+                <header class="panel-header">
+                  <div>
+                    <h2>Priority queue</h2>
+                    <p>Ordered by SLA risk, intent, and lead age</p>
+                  </div>
+                  <button class="btn btn-ghost" data-view-target="leads" type="button">
+                    View all
+                  </button>
+                </header>
+                <div class="priority-list">
+                  <button class="priority-row" data-lead="ananya" type="button">
+                    <span class="person-cell">
+                      <span class="avatar">AR</span>
+                      <span>
+                        <strong>Ananya Reddy</strong>
+                        <span>+91 98765 43210</span>
+                      </span>
+                    </span>
+                    <span class="priority-meta">
+                      <strong>Referral</strong>
+                      <span>₹5,000 monthly bill</span>
+                    </span>
+                    <span><span class="badge badge-overdue">Overdue</span></span>
+                    <span class="priority-time">
+                      <strong>12 min</strong>
+                      <span>untouched</span>
+                    </span>
+                  </button>
+                  <button class="priority-row" data-lead="vikram" type="button">
+                    <span class="person-cell">
+                      <span class="avatar blue">VK</span>
+                      <span>
+                        <strong>Vikram Kumar</strong>
+                        <span>+91 98480 11672</span>
+                      </span>
+                    </span>
+                    <span class="priority-meta">
+                      <strong>Quotation</strong>
+                      <span>5 kW rooftop</span>
+                    </span>
+                    <span><span class="badge badge-due">Due soon</span></span>
+                    <span class="priority-time">
+                      <strong>08 min</strong>
+                      <span>SLA left</span>
+                    </span>
+                  </button>
+                  <button class="priority-row" data-lead="meera" type="button">
+                    <span class="person-cell">
+                      <span class="avatar purple">MI</span>
+                      <span>
+                        <strong>Meera Iyer</strong>
+                        <span>+91 99630 88442</span>
+                      </span>
+                    </span>
+                    <span class="priority-meta">
+                      <strong>Outbound call</strong>
+                      <span>Site visit requested</span>
+                    </span>
+                    <span><span class="badge badge-qualified">Qualified</span></span>
+                    <span class="priority-time">
+                      <strong>2:30 PM</strong>
+                      <span>follow-up</span>
+                    </span>
+                  </button>
+                  <button class="priority-row" data-lead="arjun" type="button">
+                    <span class="person-cell">
+                      <span class="avatar amber">AN</span>
+                      <span>
+                        <strong>Arjun Naik</strong>
+                        <span>+91 97012 44018</span>
+                      </span>
+                    </span>
+                    <span class="priority-meta">
+                      <strong>Contact form</strong>
+                      <span>Commercial property</span>
+                    </span>
+                    <span><span class="badge badge-contacted">Contacted</span></span>
+                    <span class="priority-time">
+                      <strong>4:00 PM</strong>
+                      <span>proposal call</span>
+                    </span>
+                  </button>
+                </div>
+              </article>
+
+              <aside class="panel">
+                <header class="panel-header">
+                  <div>
+                    <h2>Pipeline pulse</h2>
+                    <p>Open opportunities by stage</p>
+                  </div>
+                  <span class="badge badge-success">Healthy</span>
+                </header>
+                <div class="panel-body">
+                  <div class="funnel">
+                    <div class="funnel-row">
+                      <span>New</span>
+                      <div class="funnel-track"><div class="funnel-fill" style="width: 100%"></div></div>
+                      <strong>28</strong>
+                    </div>
+                    <div class="funnel-row">
+                      <span>Contacted</span>
+                      <div class="funnel-track"><div class="funnel-fill" style="width: 78%"></div></div>
+                      <strong>22</strong>
+                    </div>
+                    <div class="funnel-row">
+                      <span>Qualified</span>
+                      <div class="funnel-track"><div class="funnel-fill" style="width: 57%"></div></div>
+                      <strong>16</strong>
+                    </div>
+                    <div class="funnel-row">
+                      <span>Quote ready</span>
+                      <div class="funnel-track"><div class="funnel-fill" style="width: 39%"></div></div>
+                      <strong>11</strong>
+                    </div>
+                    <div class="funnel-row">
+                      <span>Negotiation</span>
+                      <div class="funnel-track"><div class="funnel-fill" style="width: 25%"></div></div>
+                      <strong>07</strong>
+                    </div>
+                  </div>
+                  <div class="activity-feed">
+                    <div class="feed-item">
+                      <strong>Priya qualified a referral</strong>
+                      Ananya needs a 3 kW residential system.
+                      <time>4 minutes ago</time>
+                    </div>
+                    <div class="feed-item">
+                      <strong>Lead created from new number</strong>
+                      Ravi called +91 93982 77201.
+                      <time>11 minutes ago</time>
+                    </div>
+                    <div class="feed-item">
+                      <strong>Quotation accepted</strong>
+                      Karthik moved to Negotiation.
+                      <time>28 minutes ago</time>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="view" id="view-leads">
+            <header class="page-heading">
+              <div>
+                <p class="eyebrow">Unified lead identity</p>
+                <h1>Lead workspace</h1>
+                <p>One lead per workspace and normalized phone number.</p>
+              </div>
+              <div class="page-actions">
+                <button class="btn btn-secondary" type="button">Bulk assign</button>
+                <button class="btn btn-primary" data-open-modal="newLead" type="button">
+                  <svg class="icon icon-sm"><use href="#i-plus"></use></svg>
+                  New lead
+                </button>
+              </div>
+            </header>
+
+            <div class="filter-bar">
+              <label class="filter-search">
+                <svg class="icon icon-sm"><use href="#i-search"></use></svg>
+                <input id="leadSearch" type="search" placeholder="Search name or phone" />
+              </label>
+              <select class="filter-select" id="stageFilter" aria-label="Filter stage">
+                <option value="all">All stages</option>
+                <option value="new">New</option>
+                <option value="contacted">Contacted</option>
+                <option value="qualified">Qualified</option>
+                <option value="quote">Quote prepared</option>
+              </select>
+              <select class="filter-select" id="sourceFilter" aria-label="Filter source">
+                <option value="all">All sources</option>
+                <option value="referral">Referral</option>
+                <option value="quotation">Quotation</option>
+                <option value="call">Outbound call</option>
+                <option value="contact">Contact form</option>
+              </select>
+              <select class="filter-select" aria-label="Filter owner">
+                <option>All owners</option>
+                <option>Priya Sharma</option>
+                <option>Ravi Teja</option>
+                <option>Unassigned</option>
+              </select>
+              <span class="filter-results"><b id="leadCount">7</b> leads</span>
+            </div>
+
+            <div class="lead-table-wrap" id="leadTableWrap">
+              <table class="lead-table">
+                <thead>
+                  <tr>
+                    <th>Lead</th>
+                    <th>Stage</th>
+                    <th>Source</th>
+                    <th>Owner</th>
+                    <th>Next action</th>
+                    <th>Updated</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="leadRows">
+                  <tr data-name="ananya reddy 9876543210" data-stage="new" data-source="referral">
+                    <td>
+                      <button class="lead-name-button" data-lead="ananya" type="button">Ananya Reddy</button>
+                      <span class="phone-text">+91 98765 43210 · Hyderabad</span>
+                    </td>
+                    <td><span class="badge badge-new">New</span></td>
+                    <td>Referral</td>
+                    <td><span class="owner-cell"><span class="avatar">PS</span> Priya</span></td>
+                    <td><strong>Call now</strong><span class="phone-text">3 min overdue</span></td>
+                    <td>12 min ago</td>
+                    <td><button class="table-action" data-lead="ananya" type="button"><svg class="icon"><use href="#i-more"></use></svg></button></td>
+                  </tr>
+                  <tr data-name="vikram kumar 9848011672" data-stage="new" data-source="quotation">
+                    <td>
+                      <button class="lead-name-button" data-lead="vikram" type="button">Vikram Kumar</button>
+                      <span class="phone-text">+91 98480 11672 · Secunderabad</span>
+                    </td>
+                    <td><span class="badge badge-new">New</span></td>
+                    <td>Quotation</td>
+                    <td><span class="owner-cell"><span class="avatar blue">RT</span> Ravi</span></td>
+                    <td><strong>First call</strong><span class="phone-text">Due in 8 min</span></td>
+                    <td>18 min ago</td>
+                    <td><button class="table-action" data-lead="vikram" type="button"><svg class="icon"><use href="#i-more"></use></svg></button></td>
+                  </tr>
+                  <tr data-name="meera iyer 9963088442" data-stage="qualified" data-source="call">
+                    <td>
+                      <button class="lead-name-button" data-lead="meera" type="button">Meera Iyer</button>
+                      <span class="phone-text">+91 99630 88442 · Gachibowli</span>
+                    </td>
+                    <td><span class="badge badge-qualified">Qualified</span></td>
+                    <td>Outbound call</td>
+                    <td><span class="owner-cell"><span class="avatar blue">RT</span> Ravi</span></td>
+                    <td><strong>Site visit</strong><span class="phone-text">Today, 2:30 PM</span></td>
+                    <td>36 min ago</td>
+                    <td><button class="table-action" data-lead="meera" type="button"><svg class="icon"><use href="#i-more"></use></svg></button></td>
+                  </tr>
+                  <tr data-name="arjun naik 9701244018" data-stage="contacted" data-source="contact">
+                    <td>
+                      <button class="lead-name-button" data-lead="arjun" type="button">Arjun Naik</button>
+                      <span class="phone-text">+91 97012 44018 · Kukatpally</span>
+                    </td>
+                    <td><span class="badge badge-contacted">Contacted</span></td>
+                    <td>Contact form</td>
+                    <td><span class="owner-cell"><span class="avatar amber">SM</span> Sneha</span></td>
+                    <td><strong>Proposal call</strong><span class="phone-text">Today, 4:00 PM</span></td>
+                    <td>1 hour ago</td>
+                    <td><button class="table-action" data-lead="arjun" type="button"><svg class="icon"><use href="#i-more"></use></svg></button></td>
+                  </tr>
+                  <tr data-name="karthik rao 9398277201" data-stage="quote" data-source="referral">
+                    <td>
+                      <button class="lead-name-button" data-lead="karthik" type="button">Karthik Rao</button>
+                      <span class="phone-text">+91 93982 77201 · Kondapur</span>
+                    </td>
+                    <td><span class="badge badge-quote">Quote prepared</span></td>
+                    <td>Referral</td>
+                    <td><span class="owner-cell"><span class="avatar">PS</span> Priya</span></td>
+                    <td><strong>Share revision</strong><span class="phone-text">Tomorrow, 10:00 AM</span></td>
+                    <td>2 hours ago</td>
+                    <td><button class="table-action" data-lead="karthik" type="button"><svg class="icon"><use href="#i-more"></use></svg></button></td>
+                  </tr>
+                  <tr data-name="saira begum 9989011435" data-stage="contacted" data-source="call">
+                    <td>
+                      <button class="lead-name-button" data-lead="saira" type="button">Saira Begum</button>
+                      <span class="phone-text">+91 99890 11435 · Tolichowki</span>
+                    </td>
+                    <td><span class="badge badge-contacted">Contacted</span></td>
+                    <td>Outbound call</td>
+                    <td><span class="owner-cell"><span class="avatar purple">AK</span> Ajay</span></td>
+                    <td><strong>WhatsApp brochure</strong><span class="phone-text">Today, 5:15 PM</span></td>
+                    <td>3 hours ago</td>
+                    <td><button class="table-action" data-lead="saira" type="button"><svg class="icon"><use href="#i-more"></use></svg></button></td>
+                  </tr>
+                  <tr data-name="rohan patel 9849012678" data-stage="qualified" data-source="quotation">
+                    <td>
+                      <button class="lead-name-button" data-lead="rohan" type="button">Rohan Patel</button>
+                      <span class="phone-text">+91 98490 12678 · Miyapur</span>
+                    </td>
+                    <td><span class="badge badge-qualified">Qualified</span></td>
+                    <td>Quotation</td>
+                    <td><span class="owner-cell"><span class="avatar amber">SM</span> Sneha</span></td>
+                    <td><strong>Roof assessment</strong><span class="phone-text">Friday, 11:00 AM</span></td>
+                    <td>Yesterday</td>
+                    <td><button class="table-action" data-lead="rohan" type="button"><svg class="icon"><use href="#i-more"></use></svg></button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="empty-search" id="leadEmpty">
+              <h2>No matching leads</h2>
+              <p>Try changing your search or filter combination.</p>
+            </div>
+          </section>
+
+          <section class="view" id="view-pipeline">
+            <header class="page-heading">
+              <div>
+                <p class="eyebrow">Live opportunity flow</p>
+                <h1>Pipeline board</h1>
+                <p>₹46.8 lakh open value across 64 active opportunities.</p>
+              </div>
+              <div class="page-actions">
+                <button class="btn btn-secondary" type="button">This month</button>
+                <button class="btn btn-primary" data-open-modal="newLead" type="button">Add opportunity</button>
+              </div>
+            </header>
+
+            <div class="kanban">
+              <section class="kanban-column">
+                <header class="kanban-heading"><strong>New</strong><span>8</span></header>
+                <article class="kanban-card">
+                  <button data-lead="ananya" type="button">
+                    <span class="badge badge-overdue">SLA overdue</span>
+                    <h3>Ananya Reddy</h3>
+                    <p>Referral · Residential · ₹5,000 bill</p>
+                    <div class="kanban-footer"><span>12 min ago</span><span class="avatar">PS</span></div>
+                  </button>
+                </article>
+                <article class="kanban-card">
+                  <button data-lead="vikram" type="button">
+                    <span class="badge badge-due">8 min left</span>
+                    <h3>Vikram Kumar</h3>
+                    <p>Quotation · 5 kW rooftop</p>
+                    <div class="kanban-footer"><span>18 min ago</span><span class="avatar blue">RT</span></div>
+                  </button>
+                </article>
+              </section>
+              <section class="kanban-column">
+                <header class="kanban-heading"><strong>Contacted</strong><span>14</span></header>
+                <article class="kanban-card">
+                  <button data-lead="arjun" type="button">
+                    <span class="badge badge-contacted">Call completed</span>
+                    <h3>Arjun Naik</h3>
+                    <p>Commercial · 18 kW estimate</p>
+                    <div class="kanban-footer"><span>Follow-up 4 PM</span><span class="avatar amber">SM</span></div>
+                  </button>
+                </article>
+                <article class="kanban-card">
+                  <button data-lead="saira" type="button">
+                    <span class="badge badge-contacted">WhatsApp due</span>
+                    <h3>Saira Begum</h3>
+                    <p>Outbound call · Residential</p>
+                    <div class="kanban-footer"><span>Today, 5:15 PM</span><span class="avatar purple">AK</span></div>
+                  </button>
+                </article>
+              </section>
+              <section class="kanban-column">
+                <header class="kanban-heading"><strong>Qualified</strong><span>16</span></header>
+                <article class="kanban-card">
+                  <button data-lead="meera" type="button">
+                    <span class="badge badge-qualified">High intent</span>
+                    <h3>Meera Iyer</h3>
+                    <p>3 kW · Site visit requested</p>
+                    <div class="kanban-footer"><span>Today, 2:30 PM</span><span class="avatar blue">RT</span></div>
+                  </button>
+                </article>
+                <article class="kanban-card">
+                  <button data-lead="rohan" type="button">
+                    <span class="badge badge-qualified">Roof check</span>
+                    <h3>Rohan Patel</h3>
+                    <p>Quotation · 4 kW system</p>
+                    <div class="kanban-footer"><span>Friday, 11 AM</span><span class="avatar amber">SM</span></div>
+                  </button>
+                </article>
+              </section>
+              <section class="kanban-column">
+                <header class="kanban-heading"><strong>Quote prepared</strong><span>11</span></header>
+                <article class="kanban-card">
+                  <button data-lead="karthik" type="button">
+                    <span class="badge badge-quote">₹3.8 lakh</span>
+                    <h3>Karthik Rao</h3>
+                    <p>5 kW · EMI requested</p>
+                    <div class="kanban-footer"><span>Revision tomorrow</span><span class="avatar">PS</span></div>
+                  </button>
+                </article>
+              </section>
+            </div>
+          </section>
+
+          <section class="view" id="view-team">
+            <header class="page-heading">
+              <div>
+                <p class="eyebrow">Team performance</p>
+                <h1>Activity and workload</h1>
+                <p>Daily progress across Hyderabad Central representatives.</p>
+              </div>
+              <button class="btn btn-secondary" type="button">Last 7 days</button>
+            </header>
+            <div class="team-grid">
+              <article class="panel rep-card">
+                <div class="rep-head"><span class="avatar large">PS</span><div><h3>Priya Sharma</h3><p>Senior sales representative</p></div></div>
+                <div class="rep-stats"><div><strong>14</strong><span>Actions</span></div><div><strong>8</strong><span>Connected</span></div><div><strong>3</strong><span>Qualified</span></div></div>
+                <div class="progress"><span style="width: 88%"></span></div>
+              </article>
+              <article class="panel rep-card">
+                <div class="rep-head"><span class="avatar large blue">RT</span><div><h3>Ravi Teja</h3><p>Field sales representative</p></div></div>
+                <div class="rep-stats"><div><strong>11</strong><span>Actions</span></div><div><strong>6</strong><span>Connected</span></div><div><strong>2</strong><span>Qualified</span></div></div>
+                <div class="progress"><span style="width: 72%"></span></div>
+              </article>
+              <article class="panel rep-card">
+                <div class="rep-head"><span class="avatar large amber">SM</span><div><h3>Sneha Mehta</h3><p>Sales representative</p></div></div>
+                <div class="rep-stats"><div><strong>09</strong><span>Actions</span></div><div><strong>7</strong><span>Connected</span></div><div><strong>2</strong><span>Qualified</span></div></div>
+                <div class="progress"><span style="width: 65%"></span></div>
+              </article>
+              <article class="panel rep-card">
+                <div class="rep-head"><span class="avatar large purple">AK</span><div><h3>Ajay Kumar</h3><p>Field sales representative</p></div></div>
+                <div class="rep-stats"><div><strong>08</strong><span>Actions</span></div><div><strong>4</strong><span>Connected</span></div><div><strong>1</strong><span>Qualified</span></div></div>
+                <div class="progress"><span style="width: 51%"></span></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="view" id="view-automation">
+            <header class="page-heading">
+              <div>
+                <p class="eyebrow">Rules and handoffs</p>
+                <h1>Automation</h1>
+                <p>Reliable, auditable rules that keep every lead moving.</p>
+              </div>
+              <button class="btn btn-primary" id="newRuleButton" type="button">
+                <svg class="icon icon-sm"><use href="#i-plus"></use></svg>
+                New rule
+              </button>
+            </header>
+            <div class="dashboard-grid">
+              <article class="panel">
+                <header class="panel-header"><h2>Active workflows</h2><span class="badge badge-success">4 running</span></header>
+                <div class="priority-list">
+                  <button class="priority-row" type="button">
+                    <span class="person-cell"><span class="channel-icon"><svg class="icon"><use href="#i-zap"></use></svg></span><span><strong>New lead assignment</strong><span>Territory → availability → round robin</span></span></span>
+                    <span class="priority-meta"><strong>Always on</strong><span>All sources</span></span>
+                    <span><span class="badge badge-success">Active</span></span>
+                    <span class="priority-time"><strong>28</strong><span>today</span></span>
+                  </button>
+                  <button class="priority-row" type="button">
+                    <span class="person-cell"><span class="channel-icon"><svg class="icon"><use href="#i-message"></use></svg></span><span><strong>Referral acknowledgement</strong><span>Approved WhatsApp template</span></span></span>
+                    <span class="priority-meta"><strong>Referral</strong><span>On create</span></span>
+                    <span><span class="badge badge-success">Active</span></span>
+                    <span class="priority-time"><strong>12</strong><span>today</span></span>
+                  </button>
+                  <button class="priority-row" type="button">
+                    <span class="person-cell"><span class="channel-icon"><svg class="icon"><use href="#i-bell"></use></svg></span><span><strong>First-touch SLA alert</strong><span>Escalate after 10 minutes</span></span></span>
+                    <span class="priority-meta"><strong>New lead</strong><span>Business hours</span></span>
+                    <span><span class="badge badge-success">Active</span></span>
+                    <span class="priority-time"><strong>03</strong><span>alerted</span></span>
+                  </button>
+                </div>
+              </article>
+              <aside class="panel">
+                <header class="panel-header"><div><h2>Execution health</h2><p>Last 24 hours</p></div></header>
+                <div class="panel-body">
+                  <div class="rep-stats"><div><strong>142</strong><span>Executed</span></div><div><strong>99.3%</strong><span>Success</span></div><div><strong>1</strong><span>Retrying</span></div></div>
+                  <div class="activity-feed">
+                    <div class="feed-item"><strong>Assignment completed</strong>Vikram routed to Ravi by pincode.<time>18 minutes ago</time></div>
+                    <div class="feed-item"><strong>WhatsApp delivered</strong>Referral acknowledgement sent.<time>24 minutes ago</time></div>
+                    <div class="feed-item"><strong>Retry succeeded</strong>CustomerCreated event processed.<time>41 minutes ago</time></div>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </section>
+
+          <section class="view" id="view-settings">
+            <header class="page-heading">
+              <div>
+                <p class="eyebrow">Workspace control</p>
+                <h1>Hyderabad Central</h1>
+                <p>Configure identity, assignment, SLAs, and source integrations.</p>
+              </div>
+              <button class="btn btn-primary" id="saveSettingsButton" type="button">Save changes</button>
+            </header>
+            <div class="dashboard-grid">
+              <article class="panel">
+                <header class="panel-header"><h2>Lead identity</h2></header>
+                <div class="panel-body form-grid">
+                  <div class="form-field full">
+                    <label>Canonical lead key</label>
+                    <input value="WorkspaceId + NormalizedPhoneNumber" readonly />
+                    <small>Phone numbers are normalized to E.164 before lookup.</small>
+                  </div>
+                  <div class="form-field">
+                    <label>Default country</label>
+                    <select><option>India (+91)</option></select>
+                  </div>
+                  <div class="form-field">
+                    <label>First-touch SLA</label>
+                    <select><option>10 minutes</option><option>15 minutes</option></select>
+                  </div>
+                  <div class="form-field">
+                    <label>Default pipeline</label>
+                    <select><option>Solar residential</option><option>Commercial</option></select>
+                  </div>
+                  <div class="form-field">
+                    <label>Unassigned fallback</label>
+                    <select><option>Manager queue</option><option>Round robin</option></select>
+                  </div>
+                </div>
+              </article>
+              <aside class="panel">
+                <header class="panel-header"><h2>Integrations</h2></header>
+                <div class="panel-body activity-feed" style="margin-top: 0; padding-top: 0; border-top: 0">
+                  <div class="feed-item"><strong>Customer API</strong>Connected · event latency 1.8s<time>Healthy</time></div>
+                  <div class="feed-item"><strong>WhatsApp Business</strong>Connected · 3 approved templates<time>Healthy</time></div>
+                  <div class="feed-item"><strong>Mobile activity outbox</strong>4 devices synced today<time>Healthy</time></div>
+                </div>
+              </aside>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="overlay" id="drawerOverlay"></div>
+    <aside class="lead-drawer" id="leadDrawer" aria-hidden="true">
+      <header class="drawer-top">
+        <strong>Lead details</strong>
+        <button class="btn-icon" id="closeDrawer" type="button" aria-label="Close details">
+          <svg class="icon"><use href="#i-x"></use></svg>
+        </button>
+      </header>
+      <div class="drawer-content">
+        <div class="lead-identity">
+          <span class="avatar large" id="drawerAvatar">AR</span>
+          <div>
+            <h2 id="drawerName">Ananya Reddy</h2>
+            <p><span id="drawerPhone">+91 98765 43210</span> · <span id="drawerLocation">Hyderabad</span></p>
+          </div>
+        </div>
+        <div class="drawer-actions">
+          <button class="quick-action" data-toast="Call started and activity created" type="button"><svg class="icon"><use href="#i-phone"></use></svg>Call</button>
+          <button class="quick-action" data-toast="WhatsApp conversation opened" type="button"><svg class="icon"><use href="#i-message"></use></svg>WhatsApp</button>
+          <button class="quick-action" data-toast="Follow-up task added" type="button"><svg class="icon"><use href="#i-calendar"></use></svg>Follow-up</button>
+          <button class="quick-action" data-toast="Note added to timeline" type="button"><svg class="icon"><use href="#i-plus"></use></svg>Add note</button>
+        </div>
+        <div class="info-grid">
+          <div class="info-cell"><span>Stage</span><strong id="drawerStage">New</strong></div>
+          <div class="info-cell"><span>Owner</span><strong id="drawerOwner">Priya Sharma</strong></div>
+          <div class="info-cell"><span>Source</span><strong id="drawerSource">Referral</strong></div>
+          <div class="info-cell"><span>Next action</span><strong id="drawerNext">Call now</strong></div>
+          <div class="info-cell"><span>Monthly bill</span><strong id="drawerBill">₹5,000</strong></div>
+          <div class="info-cell"><span>System interest</span><strong id="drawerSystem">3 kW rooftop</strong></div>
+        </div>
+        <section class="drawer-section">
+          <div class="drawer-section-head"><h3>Activity timeline</h3><button class="btn btn-ghost" type="button">View audit</button></div>
+          <div class="timeline" id="drawerTimeline">
+            <div class="timeline-item">
+              <strong>Lead assigned to Priya</strong>
+              <p>Matched Hyderabad Central territory and current availability.</p>
+              <time>Today, 1:34 PM</time>
+            </div>
+            <div class="timeline-item">
+              <strong>Referral received</strong>
+              <p>Referred by Ramesh Reddy. Consent to share details confirmed.</p>
+              <time>Today, 1:32 PM</time>
+            </div>
+            <div class="timeline-item">
+              <strong>Customer profile linked</strong>
+              <p>Phone normalized to +919876543210. No duplicate lead found.</p>
+              <time>Today, 1:32 PM</time>
+            </div>
+          </div>
+        </section>
+      </div>
+    </aside>
+
+    <div class="overlay" id="modalOverlay"></div>
+    <section class="modal" id="newLeadModal" aria-hidden="true">
+      <header class="modal-head">
+        <div><h2>Create lead</h2><p>Phone is checked inside the selected workspace.</p></div>
+        <button class="btn-icon" data-close-modal type="button" aria-label="Close modal"><svg class="icon"><use href="#i-x"></use></svg></button>
+      </header>
+      <form id="newLeadForm">
+        <div class="modal-body form-grid">
+          <div class="form-field full">
+            <label for="newPhone">Phone number</label>
+            <input id="newPhone" name="phone" placeholder="98765 43210" required inputmode="tel" />
+            <small>Will be normalized to +91 E.164 format.</small>
+          </div>
+          <div class="form-field">
+            <label for="newName">Name</label>
+            <input id="newName" name="name" placeholder="Prospect name" required />
+          </div>
+          <div class="form-field">
+            <label for="newSource">Source</label>
+            <select id="newSource" name="source">
+              <option>Manual</option><option>Referral</option><option>Outbound call</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="newCity">City</label>
+            <input id="newCity" name="city" value="Hyderabad" />
+          </div>
+          <div class="form-field">
+            <label for="newOwner">Owner</label>
+            <select id="newOwner" name="owner"><option>Auto assign</option><option>Priya Sharma</option><option>Ravi Teja</option></select>
+          </div>
+          <div class="form-field full">
+            <label for="newNote">Context</label>
+            <textarea id="newNote" name="note" placeholder="What do we know about this lead?"></textarea>
+          </div>
+        </div>
+        <footer class="modal-actions">
+          <button class="btn btn-secondary" data-close-modal type="button">Cancel</button>
+          <button class="btn btn-primary" type="submit">Create and assign</button>
+        </footer>
+      </form>
+    </section>
+
+    <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+    <script src="web-portal.js"></script>
+  </body>
+</html>

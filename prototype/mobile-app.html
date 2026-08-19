@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Interactive Surya Sai Solar sales representative mobile prototype"
+    />
+    <title>Sales Representative App · Surya Sai Solar</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <svg class="sr-only" aria-hidden="true">
+      <symbol id="i-home" viewBox="0 0 24 24">
+        <path d="m3 11 9-8 9 8"></path>
+        <path d="M5 10v11h14V10M9 21v-6h6v6"></path>
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.69 2.8a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.33 1.84.56 2.8.69A2 2 0 0 1 22 16.92Z"></path>
+      </symbol>
+      <symbol id="i-message" viewBox="0 0 24 24">
+        <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path>
+      </symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+        <path d="M16 3v4M8 3v4M3 11h18"></path>
+      </symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1 1.55V21h-4v-.08a1.7 1.7 0 0 0-1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3v-4h.08a1.7 1.7 0 0 0 1.55-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3h4v.08a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.12.6.6 1 1.2 1H21v4h-.4c-.6 0-1.08.4-1.2 1Z"></path>
+      </symbol>
+      <symbol id="i-search" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24">
+        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+        <path d="M13.7 21a2 2 0 0 1-3.4 0"></path>
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24">
+        <path d="M12 5v14M5 12h14"></path>
+      </symbol>
+      <symbol id="i-arrow-left" viewBox="0 0 24 24">
+        <path d="m15 18-6-6 6-6"></path>
+      </symbol>
+      <symbol id="i-location" viewBox="0 0 24 24">
+        <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+        <circle cx="12" cy="10" r="2.5"></circle>
+      </symbol>
+      <symbol id="i-check" viewBox="0 0 24 24">
+        <path d="m5 12 4 4L19 6"></path>
+      </symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24">
+        <path d="m9 18 6-6-6-6"></path>
+      </symbol>
+      <symbol id="i-wifi-off" viewBox="0 0 24 24">
+        <path d="m2 2 20 20"></path>
+        <path d="M8.5 8.5A10.8 10.8 0 0 1 12 8c3 0 5.8 1.2 7.8 3.2M5 5.5A15.8 15.8 0 0 1 12 4c4.4 0 8.3 1.8 11 4.7M8.5 15.5A5 5 0 0 1 12 14c1.3 0 2.5.5 3.5 1.3M12 20h.01"></path>
+      </symbol>
+    </svg>
+
+    <main class="mobile-page">
+      <section class="mobile-context">
+        <p class="eyebrow">Field sales prototype</p>
+        <h1>Move every lead to its next action.</h1>
+        <p>
+          This mobile prototype demonstrates a focused daily queue, unified
+          lead identity, new-number calling, offline capture, and structured
+          follow-up.
+        </p>
+        <div class="prototype-hints">
+          <div class="hint"><span>1</span> Tap a lead to inspect the full timeline</div>
+          <div class="hint"><span>2</span> Use the green phone button to call a new number</div>
+          <div class="hint"><span>3</span> Complete the call outcome and next action</div>
+          <div class="hint"><span>4</span> Toggle offline mode under Settings</div>
+        </div>
+        <a class="back-link" href="index.html">← Back to prototype selector</a>
+      </section>
+
+      <section class="phone-shell" id="phoneShell" aria-label="Mobile app prototype">
+        <div class="phone-status">
+          <span>1:56</span>
+          <span>5G&nbsp;&nbsp; 87%</span>
+        </div>
+        <div class="phone-island" aria-hidden="true"></div>
+
+        <div class="mobile-app-content">
+          <div class="offline-banner">
+            <svg class="icon icon-sm"><use href="#i-wifi-off"></use></svg>
+            Offline · actions will sync automatically
+          </div>
+
+          <section class="mobile-screen active" id="mobile-today">
+            <header class="mobile-header">
+              <div>
+                <p>Wednesday, 19 August</p>
+                <h1>Good afternoon, Ravi</h1>
+              </div>
+              <button class="btn-icon" id="mobileBell" type="button" aria-label="Notifications">
+                <svg class="icon"><use href="#i-bell"></use></svg>
+              </button>
+            </header>
+            <div class="mobile-workspace">
+              <span><strong>Hyderabad Central</strong> workspace</span>
+              <span>Synced now</span>
+            </div>
+            <div class="mobile-body">
+              <div class="mobile-summary">
+                <article class="mobile-stat"><strong>09</strong><span>Due today</span></article>
+                <article class="mobile-stat"><strong>03</strong><span>Overdue</span></article>
+                <article class="mobile-stat"><strong>07</strong><span>Completed</span></article>
+              </div>
+              <div class="mobile-section-title"><h2>Next best actions</h2><button data-mobile-view="leads" type="button">View all</button></div>
+
+              <button class="mobile-lead-card" data-mobile-lead="ananya" type="button">
+                <div class="mobile-lead-top">
+                  <span class="avatar">AR</span>
+                  <span class="mobile-lead-main"><h3>Ananya Reddy</h3><p>Referral · ₹5,000 monthly bill</p></span>
+                  <span class="badge badge-overdue">Overdue</span>
+                </div>
+                <div class="mobile-lead-bottom">
+                  <span class="next-action"><svg class="icon icon-sm"><use href="#i-phone"></use></svg> First call · 3 min overdue</span>
+                  <span class="mobile-card-actions">
+                    <span class="mini-action"><svg class="icon icon-sm"><use href="#i-phone"></use></svg></span>
+                  </span>
+                </div>
+              </button>
+
+              <button class="mobile-lead-card" data-mobile-lead="meera" type="button">
+                <div class="mobile-lead-top">
+                  <span class="avatar purple">MI</span>
+                  <span class="mobile-lead-main"><h3>Meera Iyer</h3><p>Qualified · 3 kW rooftop</p></span>
+                  <span class="badge badge-qualified">High intent</span>
+                </div>
+                <div class="mobile-lead-bottom">
+                  <span class="next-action"><svg class="icon icon-sm"><use href="#i-location"></use></svg> Site visit · 2:30 PM</span>
+                  <span class="mobile-card-actions">
+                    <span class="mini-action"><svg class="icon icon-sm"><use href="#i-location"></use></svg></span>
+                  </span>
+                </div>
+              </button>
+
+              <button class="mobile-lead-card" data-mobile-lead="vikram" type="button">
+                <div class="mobile-lead-top">
+                  <span class="avatar blue">VK</span>
+                  <span class="mobile-lead-main"><h3>Vikram Kumar</h3><p>Quotation · 5 kW rooftop</p></span>
+                  <span class="badge badge-due">8 min left</span>
+                </div>
+                <div class="mobile-lead-bottom">
+                  <span class="next-action"><svg class="icon icon-sm"><use href="#i-phone"></use></svg> First call · due soon</span>
+                  <span class="mobile-card-actions">
+                    <span class="mini-action"><svg class="icon icon-sm"><use href="#i-phone"></use></svg></span>
+                  </span>
+                </div>
+              </button>
+
+              <div class="mobile-section-title"><h2>Recently completed</h2><button type="button">History</button></div>
+              <button class="mobile-lead-card" data-mobile-lead="arjun" type="button">
+                <div class="mobile-lead-top">
+                  <span class="avatar amber">AN</span>
+                  <span class="mobile-lead-main"><h3>Arjun Naik</h3><p>Connected · Proposal requested</p></span>
+                  <span class="badge badge-contacted">Done</span>
+                </div>
+                <div class="mobile-lead-bottom"><span class="next-action"><svg class="icon icon-sm"><use href="#i-calendar"></use></svg> Next: proposal call at 4 PM</span></div>
+              </button>
+            </div>
+          </section>
+
+          <section class="mobile-screen" id="mobile-leads">
+            <header class="mobile-header">
+              <div><p>Your pipeline</p><h1>Leads</h1></div>
+              <button class="btn-icon" data-mobile-view="dial" type="button" aria-label="Call new number"><svg class="icon"><use href="#i-plus"></use></svg></button>
+            </header>
+            <div class="mobile-body">
+              <label class="mobile-search">
+                <svg class="icon icon-sm"><use href="#i-search"></use></svg>
+                <input id="mobileLeadSearch" type="search" placeholder="Search name or phone" />
+              </label>
+              <div class="mobile-tabs">
+                <button class="mobile-tab active" data-stage-tab="all" type="button">All 28</button>
+                <button class="mobile-tab" data-stage-tab="new" type="button">New 09</button>
+                <button class="mobile-tab" data-stage-tab="qualified" type="button">Qualified 07</button>
+              </div>
+              <div id="mobileLeadList">
+                <button class="mobile-lead-card" data-mobile-lead="ananya" data-mobile-stage="new" data-mobile-name="ananya reddy 9876543210" type="button">
+                  <div class="mobile-lead-top"><span class="avatar">AR</span><span class="mobile-lead-main"><h3>Ananya Reddy</h3><p>+91 98765 43210 · Referral</p></span><span class="badge badge-new">New</span></div>
+                  <div class="mobile-lead-bottom"><span class="next-action">Call now · SLA overdue</span><svg class="icon icon-sm"><use href="#i-chevron"></use></svg></div>
+                </button>
+                <button class="mobile-lead-card" data-mobile-lead="vikram" data-mobile-stage="new" data-mobile-name="vikram kumar 9848011672" type="button">
+                  <div class="mobile-lead-top"><span class="avatar blue">VK</span><span class="mobile-lead-main"><h3>Vikram Kumar</h3><p>+91 98480 11672 · Quotation</p></span><span class="badge badge-new">New</span></div>
+                  <div class="mobile-lead-bottom"><span class="next-action">First call · due in 8 min</span><svg class="icon icon-sm"><use href="#i-chevron"></use></svg></div>
+                </button>
+                <button class="mobile-lead-card" data-mobile-lead="meera" data-mobile-stage="qualified" data-mobile-name="meera iyer 9963088442" type="button">
+                  <div class="mobile-lead-top"><span class="avatar purple">MI</span><span class="mobile-lead-main"><h3>Meera Iyer</h3><p>+91 99630 88442 · Outbound call</p></span><span class="badge badge-qualified">Qualified</span></div>
+                  <div class="mobile-lead-bottom"><span class="next-action">Site visit · today 2:30 PM</span><svg class="icon icon-sm"><use href="#i-chevron"></use></svg></div>
+                </button>
+                <button class="mobile-lead-card" data-mobile-lead="rohan" data-mobile-stage="qualified" data-mobile-name="rohan patel 9849012678" type="button">
+                  <div class="mobile-lead-top"><span class="avatar amber">RP</span><span class="mobile-lead-main"><h3>Rohan Patel</h3><p>+91 98490 12678 · Quotation</p></span><span class="badge badge-qualified">Qualified</span></div>
+                  <div class="mobile-lead-bottom"><span class="next-action">Roof assessment · Friday</span><svg class="icon icon-sm"><use href="#i-chevron"></use></svg></div>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section class="mobile-screen" id="mobile-detail">
+            <header class="mobile-header">
+              <button class="mobile-back" data-mobile-back type="button" aria-label="Back">
+                <svg class="icon"><use href="#i-arrow-left"></use></svg>
+              </button>
+              <span class="badge badge-success">Synced</span>
+            </header>
+            <div class="mobile-lead-hero">
+              <span class="badge badge-new" id="mobileDetailBadge">New lead</span>
+              <h2 id="mobileDetailName">Ananya Reddy</h2>
+              <p><span id="mobileDetailPhone">+91 98765 43210</span> · <span id="mobileDetailLocation">Hyderabad</span></p>
+              <div class="hero-actions">
+                <button class="hero-action primary" id="detailCallButton" type="button"><svg class="icon"><use href="#i-phone"></use></svg>Call</button>
+                <button class="hero-action" data-mobile-toast="WhatsApp opened" type="button"><svg class="icon"><use href="#i-message"></use></svg>Message</button>
+                <button class="hero-action" data-mobile-toast="Visit scheduled" type="button"><svg class="icon"><use href="#i-location"></use></svg>Visit</button>
+                <button class="hero-action" data-mobile-toast="Note added" type="button"><svg class="icon"><use href="#i-plus"></use></svg>Note</button>
+              </div>
+            </div>
+            <div class="mobile-body">
+              <section class="mobile-detail-section">
+                <h3>Lead snapshot</h3>
+                <div class="mobile-info-grid">
+                  <div><span>Source</span><strong id="mobileDetailSource">Referral</strong></div>
+                  <div><span>Owner</span><strong>Ravi Teja</strong></div>
+                  <div><span>Monthly bill</span><strong id="mobileDetailBill">₹5,000</strong></div>
+                  <div><span>Interest</span><strong id="mobileDetailSystem">3 kW rooftop</strong></div>
+                </div>
+              </section>
+              <section class="mobile-detail-section">
+                <h3>Next action</h3>
+                <div class="setting-row">
+                  <div><strong id="mobileDetailNext">First call</strong><p>Today · currently overdue</p></div>
+                  <span class="badge badge-overdue">Due</span>
+                </div>
+              </section>
+              <section class="mobile-detail-section">
+                <h3>Timeline</h3>
+                <div class="mobile-timeline-item"><strong>Assigned to you</strong><p>Matched territory and availability.</p><time>Today, 1:34 PM</time></div>
+                <div class="mobile-timeline-item"><strong id="mobileDetailEvent">Referral received</strong><p>Phone verified and unified lead identity checked.</p><time>Today, 1:32 PM</time></div>
+                <div class="mobile-timeline-item"><strong>Customer profile linked</strong><p>No duplicate lead found in this workspace.</p><time>Today, 1:32 PM</time></div>
+              </section>
+            </div>
+          </section>
+
+          <section class="mobile-screen" id="mobile-dial">
+            <div class="dial-screen">
+              <button class="mobile-back" data-mobile-back type="button" aria-label="Back">
+                <svg class="icon"><use href="#i-arrow-left"></use></svg>
+              </button>
+              <h2>Call a number</h2>
+              <p>
+                The app will find or create one lead in Hyderabad Central before
+                opening the dialer.
+              </p>
+              <label class="phone-input-wrap">
+                <span class="country-code">+91</span>
+                <input id="dialPhone" type="tel" maxlength="14" placeholder="98765 43210" inputmode="numeric" />
+              </label>
+              <div class="phone-match" id="phoneMatch">
+                <span class="avatar blue">?</span>
+                <div><strong>Enter a 10-digit mobile number</strong><p>Phone is the lead key within this workspace.</p></div>
+              </div>
+              <button class="btn btn-primary dial-action" id="startCallButton" type="button" disabled>
+                <svg class="icon"><use href="#i-phone"></use></svg>
+                Create lead and call
+              </button>
+            </div>
+          </section>
+
+          <section class="mobile-screen" id="mobile-settings">
+            <header class="mobile-header"><div><p>App and workspace</p><h1>Settings</h1></div></header>
+            <div class="mobile-body">
+              <div class="mobile-section-title"><h2>Simulation controls</h2></div>
+              <div class="settings-list">
+                <div class="setting-row">
+                  <div><strong>Offline mode</strong><p>Queue leads and activities locally</p></div>
+                  <button class="toggle" id="offlineToggle" type="button" aria-label="Toggle offline mode"></button>
+                </div>
+                <div class="setting-row">
+                  <div><strong>Due reminders</strong><p>Notify 10 minutes before task</p></div>
+                  <button class="toggle on" data-toggle type="button" aria-label="Toggle reminders"></button>
+                </div>
+                <div class="setting-row">
+                  <div><strong>Workspace</strong><p>Hyderabad Central</p></div>
+                  <svg class="icon icon-sm"><use href="#i-chevron"></use></svg>
+                </div>
+                <div class="setting-row">
+                  <div><strong>Pending sync</strong><p id="pendingSyncText">No queued actions</p></div>
+                  <span class="badge badge-success" id="syncBadge">Synced</span>
+                </div>
+              </div>
+              <div class="mobile-section-title"><h2>Identity and privacy</h2></div>
+              <div class="settings-list">
+                <div class="setting-row"><div><strong>Phone normalization</strong><p>India (+91) · E.164 format</p></div><svg class="icon icon-sm"><use href="#i-check"></use></svg></div>
+                <div class="setting-row"><div><strong>Call recording</strong><p>Off · explicit consent required</p></div><span class="badge badge-neutral">Off</span></div>
+              </div>
+            </div>
+          </section>
+
+          <button class="mobile-fab" id="mobileFab" type="button" aria-label="Call new number">
+            <svg class="icon"><use href="#i-phone"></use></svg>
+          </button>
+        </div>
+
+        <nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+          <button class="mobile-nav-item active" data-mobile-view="today" type="button">
+            <span class="icon-wrap"><svg class="icon"><use href="#i-home"></use></svg></span>Today
+          </button>
+          <button class="mobile-nav-item" data-mobile-view="leads" type="button">
+            <span class="icon-wrap"><svg class="icon"><use href="#i-users"></use></svg></span>Leads
+          </button>
+          <button class="mobile-nav-item" data-mobile-view="dial" type="button">
+            <span class="icon-wrap"><svg class="icon"><use href="#i-phone"></use></svg></span>Call
+          </button>
+          <button class="mobile-nav-item" data-mobile-view="settings" type="button">
+            <span class="icon-wrap"><svg class="icon"><use href="#i-settings"></use></svg></span>Settings
+          </button>
+        </nav>
+
+        <div class="mobile-sheet-overlay" id="mobileSheetOverlay"></div>
+        <section class="mobile-sheet" id="outcomeSheet" aria-hidden="true">
+          <div class="sheet-handle"></div>
+          <h2>Complete call</h2>
+          <p id="outcomePhone">New lead · +91 98765 43210 · 01:42</p>
+          <div class="outcome-grid">
+            <button class="outcome-option selected" data-outcome="Connected · qualified" type="button">Connected<br />Qualified</button>
+            <button class="outcome-option" data-outcome="Connected · follow up" type="button">Connected<br />Follow up</button>
+            <button class="outcome-option" data-outcome="No answer" type="button">No answer</button>
+            <button class="outcome-option" data-outcome="Not interested" type="button">Not interested</button>
+          </div>
+          <div class="sheet-field">
+            <label for="outcomeStage">Lead stage</label>
+            <select id="outcomeStage"><option>Qualified</option><option>Contact attempted</option><option>Nurture</option><option>Lost</option></select>
+          </div>
+          <div class="sheet-field">
+            <label for="outcomeNote">Call notes</label>
+            <textarea id="outcomeNote">Interested in a 3 kW rooftop system. Requested site visit and EMI details.</textarea>
+          </div>
+          <div class="sheet-field">
+            <label for="outcomeNext">Next action</label>
+            <input id="outcomeNext" value="Site visit · Tomorrow, 11:00 AM" />
+          </div>
+          <div class="sheet-actions">
+            <button class="btn btn-secondary" id="cancelOutcome" type="button">Cancel</button>
+            <button class="btn btn-primary" id="saveOutcome" type="button">Save next action</button>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div class="toast-stack" id="mobileToastStack" aria-live="polite"></div>
+    <script src="mobile-app.js"></script>
+  </body>
+</html>

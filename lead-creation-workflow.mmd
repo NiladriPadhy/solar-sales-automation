@@ -1,0 +1,91 @@
+flowchart LR
+    subgraph currentSystem["Current Surya Sai System"]
+        referralInput["User submits referral"]
+        registrationInput["User registers prospect proactively"]
+        normalizeCurrent["Normalize and validate phone"]
+        currentLookup{"Customer exists?"}
+        currentSave["Save referral and create or link customer"]
+        currentOutbox["Commit integration event to transactional outbox"]
+    end
+
+    subgraph salesApp["Sales Android App"]
+        dialInput["Sales rep enters new number"]
+        normalizeCall["Normalize and validate phone"]
+        callLeadLookup["Request lead upsert"]
+        launchDialer["Persist activity then launch dialer"]
+        captureOutcome["Capture call result and next action"]
+        offlineOutbox["Encrypted offline activity outbox"]
+    end
+
+    subgraph integration["Integration Pipeline"]
+        eventPublisher["Outbox publisher"]
+        integrationQueue["Lead integration queue"]
+        leadConsumer["Idempotent lead ingestion worker"]
+        deadLetter["Dead-letter queue and replay"]
+        reconciliation["Scheduled reconciliation"]
+    end
+
+    subgraph salesPlatform["Sales Automation Platform"]
+        authorizeWorkspace["Authorize workspace and integration identity"]
+        normalizeSales["Canonicalize phone to E.164"]
+        leadLookup{"Lead exists for workspace and phone?"}
+        createLead["Create minimal lead"]
+        enrichLead["Enrich existing lead"]
+        appendSource["Append source and activity history"]
+        assignmentCheck{"Owner exists and is active?"}
+        assignLead["Assign by relationship, territory or round robin"]
+        keepOwner["Preserve current owner"]
+        createTask["Create or retain dated next action"]
+        notifyOwner["Notify owner and update team queue"]
+    end
+
+    subgraph data["Authoritative Data"]
+        currentDb[("Customer and referral database")]
+        outboxDb[("Transactional outbox")]
+        salesDb[("Lead, activity and task database")]
+        auditDb[("Processed events and audit log")]
+    end
+
+    referralInput --> normalizeCurrent
+    registrationInput --> normalizeCurrent
+    normalizeCurrent --> currentLookup
+    currentLookup -->|"Yes"| currentSave
+    currentLookup -->|"No"| currentSave
+    currentSave --> currentDb
+    currentSave --> currentOutbox
+    currentOutbox --> outboxDb
+    eventPublisher -->|"Read committed events"| outboxDb
+    eventPublisher --> integrationQueue
+    integrationQueue --> leadConsumer
+    leadConsumer --> authorizeWorkspace
+
+    dialInput --> normalizeCall
+    normalizeCall --> callLeadLookup
+    callLeadLookup --> authorizeWorkspace
+    callLeadLookup -.->|"Offline"| offlineOutbox
+    offlineOutbox -.->|"Retry when online"| callLeadLookup
+
+    authorizeWorkspace --> normalizeSales
+    normalizeSales --> leadLookup
+    leadLookup -->|"No"| createLead
+    leadLookup -->|"Yes"| enrichLead
+    createLead --> appendSource
+    enrichLead --> appendSource
+    appendSource --> salesDb
+    appendSource --> auditDb
+    appendSource --> assignmentCheck
+    assignmentCheck -->|"No"| assignLead
+    assignmentCheck -->|"Yes"| keepOwner
+    assignLead --> createTask
+    keepOwner --> createTask
+    createTask --> salesDb
+    createTask --> notifyOwner
+
+    callLeadLookup -->|"Lead and activity returned"| launchDialer
+    launchDialer --> captureOutcome
+    captureOutcome -->|"Update activity, stage and task"| salesDb
+
+    leadConsumer -.->|"Permanent failure"| deadLetter
+    deadLetter -.->|"Approved replay"| integrationQueue
+    reconciliation -.->|"Find missing lead links"| currentDb
+    reconciliation -.->|"Repair through ingestion"| integrationQueue

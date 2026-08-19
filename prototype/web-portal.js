@@ -1,4 +1,16 @@
 const leadProfiles = {
+  sanjay: {
+    name: "Sanjay Verma",
+    initials: "SV",
+    phone: "+91 91234 56078",
+    location: "Jubilee Hills",
+    stage: "New",
+    owner: "Unassigned",
+    source: "Website enquiry",
+    next: "Accept and call within 10 min",
+    bill: "₹9,200",
+    system: "Residential rooftop",
+  },
   ananya: {
     name: "Ananya Reddy",
     initials: "AR",
@@ -101,6 +113,43 @@ const drawerOverlay = document.getElementById("drawerOverlay");
 const modalOverlay = document.getElementById("modalOverlay");
 const modal = document.getElementById("newLeadModal");
 const toastStack = document.getElementById("toastStack");
+let lastEventSeconds = 0;
+
+function formatTimer(totalSeconds) {
+  const seconds = Math.max(0, totalSeconds);
+  const minutes = Math.floor(seconds / 60);
+  return `${String(minutes).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
+function updateLiveOperations() {
+  const clock = document.getElementById("liveClock");
+  if (clock) {
+    clock.textContent = new Intl.DateTimeFormat("en-IN", {
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+    }).format(new Date());
+  }
+
+  document.querySelectorAll("[data-countdown]").forEach((element) => {
+    const next = Math.max(0, Number(element.dataset.countdown) - 1);
+    element.dataset.countdown = String(next);
+    element.textContent = formatTimer(next);
+    if (next <= 120) element.classList.add("timer-critical");
+  });
+
+  document.querySelectorAll("[data-countup]").forEach((element) => {
+    const next = Number(element.dataset.countup) + 1;
+    element.dataset.countup = String(next);
+    element.textContent = formatTimer(next);
+  });
+
+  lastEventSeconds += 1;
+  const age = document.getElementById("lastEventAge");
+  if (age) age.textContent = lastEventSeconds < 5 ? "now" : `${lastEventSeconds}s ago`;
+}
+
+window.setInterval(updateLiveOperations, 1000);
 
 function icon(name) {
   return `<svg class="icon icon-sm"><use href="#i-${name}"></use></svg>`;
@@ -270,8 +319,43 @@ document.getElementById("notificationButton").addEventListener("click", () => {
   showToast("3 new leads need first contact within 10 minutes");
 });
 
-document.getElementById("exportButton").addEventListener("click", () => {
-  showToast("Dashboard export prepared for evaluation");
+document.getElementById("simulateLeadButton").addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  if (button.disabled) return;
+  button.disabled = true;
+  button.textContent = "Receiving event…";
+
+  window.setTimeout(() => {
+    const feed = document.getElementById("liveEventFeed");
+    const eventItem = document.createElement("div");
+    eventItem.className = "feed-item event-new";
+    eventItem.innerHTML =
+      "<strong>LEAD_ASSIGNED · Sanjay Verma</strong>" +
+      "Website enquiry matched Jubilee Hills. Finding an available owner." +
+      "<time>just now · evt_8F22</time>";
+    feed.prepend(eventItem);
+    lastEventSeconds = 0;
+
+    const queue = document.querySelector("#view-dashboard .priority-list");
+    const row = document.createElement("button");
+    row.className = "priority-row incoming-row";
+    row.type = "button";
+    row.dataset.lead = "sanjay";
+    row.innerHTML =
+      '<span class="person-cell"><span class="avatar blue">SV</span><span><strong>Sanjay Verma</strong><span>+91 91234 56078</span></span></span>' +
+      '<span class="priority-meta"><strong>Website enquiry</strong><span>₹9,200 bill · Jubilee Hills</span></span>' +
+      '<span><span class="badge badge-new">Assigning</span></span>' +
+      '<span class="priority-time"><strong data-countdown="600">10:00</strong><span>first touch</span></span>';
+    row.addEventListener("click", () => openLeadDrawer("sanjay"));
+    queue.prepend(row);
+
+    document.getElementById("unassignedMetric").textContent = "03";
+    document.getElementById("slaRiskMetric").textContent = "10";
+    document.getElementById("eventLatency").textContent = "0.8s";
+    button.disabled = false;
+    button.innerHTML = `${icon("zap")}Simulate web enquiry`;
+    showToast("Live event received · Sanjay entered assignment queue");
+  }, 900);
 });
 
 document.getElementById("newRuleButton").addEventListener("click", () => {

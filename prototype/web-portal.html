@@ -146,6 +146,11 @@
           </label>
           <div class="topbar-spacer"></div>
           <div class="topbar-actions">
+            <span class="live-connection">
+              <i></i>
+              Live · <span id="eventLatency">1.2s</span>
+              <time id="liveClock">2:15:00 PM</time>
+            </span>
             <button
               class="btn-icon notification-dot"
               id="notificationButton"
@@ -166,40 +171,58 @@
             <header class="page-heading">
               <div>
                 <p class="eyebrow">Wednesday, 19 August</p>
-                <h1>Good afternoon, Niladri</h1>
-                <p>Your team has 9 actions at risk of missing today’s SLA.</p>
+                <h1>Live sales operations</h1>
+                <p>What needs intervention now—not a retrospective dashboard.</p>
               </div>
               <div class="page-actions">
-                <button class="btn btn-secondary" type="button" id="exportButton">
-                  <svg class="icon icon-sm"><use href="#i-download"></use></svg>
-                  Export
+                <button class="btn btn-secondary" type="button" id="simulateLeadButton">
+                  <svg class="icon icon-sm"><use href="#i-zap"></use></svg>
+                  Simulate web enquiry
                 </button>
                 <button class="btn btn-dark" data-view-target="leads" type="button">
-                  Review priority queue
+                  Open escalation queue
                 </button>
               </div>
             </header>
 
+            <div class="operations-strip">
+              <article class="operation-alert danger">
+                <span class="operation-icon">!</span>
+                <div><strong>3 first-touch breaches</strong><p>Oldest is 12 min overdue · manager action required</p></div>
+                <button type="button" data-view-target="leads">Review</button>
+              </article>
+              <article class="operation-alert warning">
+                <span class="operation-icon">8</span>
+                <div><strong>Assignment expires soon</strong><p>Vikram must be accepted in <b data-countdown="480">08:00</b></p></div>
+                <button type="button" data-lead="vikram">Open</button>
+              </article>
+              <article class="operation-alert success">
+                <span class="operation-icon">✓</span>
+                <div><strong>Event stream healthy</strong><p>6 reps online · last event <span id="lastEventAge">now</span></p></div>
+                <button type="button" data-view-target="automation">Health</button>
+              </article>
+            </div>
+
             <div class="metric-grid">
               <article class="metric-card">
-                <p class="metric-label">New leads today</p>
-                <span class="metric-value">28</span>
-                <span class="metric-delta">↑ 18%</span>
+                <p class="metric-label">Unassigned now</p>
+                <span class="metric-value" id="unassignedMetric">02</span>
+                <span class="metric-delta">oldest 01:42</span>
               </article>
               <article class="metric-card danger">
-                <p class="metric-label">Awaiting first touch</p>
-                <span class="metric-value">09</span>
-                <span class="metric-delta down">3 overdue</span>
+                <p class="metric-label">SLA at risk now</p>
+                <span class="metric-value" id="slaRiskMetric">09</span>
+                <span class="metric-delta down">3 breached</span>
               </article>
               <article class="metric-card warning">
-                <p class="metric-label">Follow-ups due</p>
-                <span class="metric-value">17</span>
-                <span class="metric-delta">84% complete</span>
+                <p class="metric-label">Visits in progress</p>
+                <span class="metric-value">04</span>
+                <span class="metric-delta">1 running late</span>
               </article>
               <article class="metric-card blue">
-                <p class="metric-label">Qualified this week</p>
-                <span class="metric-value">42</span>
-                <span class="metric-delta">↑ 7%</span>
+                <p class="metric-label">Proposals awaiting reply</p>
+                <span class="metric-value">11</span>
+                <span class="metric-delta">₹18.4L · 2 stale</span>
               </article>
             </div>
 
@@ -207,8 +230,8 @@
               <article class="panel">
                 <header class="panel-header">
                   <div>
-                    <h2>Priority queue</h2>
-                    <p>Ordered by SLA risk, intent, and lead age</p>
+                    <h2>Intervention queue</h2>
+                    <p>Live ordering by breach risk, value, and rep status</p>
                   </div>
                   <button class="btn btn-ghost" data-view-target="leads" type="button">
                     View all
@@ -229,8 +252,8 @@
                     </span>
                     <span><span class="badge badge-overdue">Overdue</span></span>
                     <span class="priority-time">
-                      <strong>12 min</strong>
-                      <span>untouched</span>
+                      <strong data-countup="720">12:00</strong>
+                      <span>breached</span>
                     </span>
                   </button>
                   <button class="priority-row" data-lead="vikram" type="button">
@@ -247,8 +270,8 @@
                     </span>
                     <span><span class="badge badge-due">Due soon</span></span>
                     <span class="priority-time">
-                      <strong>08 min</strong>
-                      <span>SLA left</span>
+                      <strong data-countdown="480">08:00</strong>
+                      <span>accept left</span>
                     </span>
                   </button>
                   <button class="priority-row" data-lead="meera" type="button">
@@ -293,54 +316,32 @@
               <aside class="panel">
                 <header class="panel-header">
                   <div>
-                    <h2>Pipeline pulse</h2>
-                    <p>Open opportunities by stage</p>
+                    <h2>Workspace event stream</h2>
+                    <p>Authoritative business events as they happen</p>
                   </div>
-                  <span class="badge badge-success">Healthy</span>
+                  <span class="badge badge-success"><i class="live-dot"></i> Streaming</span>
                 </header>
                 <div class="panel-body">
-                  <div class="funnel">
-                    <div class="funnel-row">
-                      <span>New</span>
-                      <div class="funnel-track"><div class="funnel-fill" style="width: 100%"></div></div>
-                      <strong>28</strong>
-                    </div>
-                    <div class="funnel-row">
-                      <span>Contacted</span>
-                      <div class="funnel-track"><div class="funnel-fill" style="width: 78%"></div></div>
-                      <strong>22</strong>
-                    </div>
-                    <div class="funnel-row">
-                      <span>Qualified</span>
-                      <div class="funnel-track"><div class="funnel-fill" style="width: 57%"></div></div>
-                      <strong>16</strong>
-                    </div>
-                    <div class="funnel-row">
-                      <span>Quote ready</span>
-                      <div class="funnel-track"><div class="funnel-fill" style="width: 39%"></div></div>
-                      <strong>11</strong>
-                    </div>
-                    <div class="funnel-row">
-                      <span>Negotiation</span>
-                      <div class="funnel-track"><div class="funnel-fill" style="width: 25%"></div></div>
-                      <strong>07</strong>
-                    </div>
-                  </div>
-                  <div class="activity-feed">
-                    <div class="feed-item">
-                      <strong>Priya qualified a referral</strong>
-                      Ananya needs a 3 kW residential system.
-                      <time>4 minutes ago</time>
+                  <div class="activity-feed live-feed" id="liveEventFeed">
+                    <div class="feed-item event-warning">
+                      <strong>SLA_BREACHED · Ananya Reddy</strong>
+                      First contact is overdue. Priya and manager notified.
+                      <time>just now · evt_8F21</time>
                     </div>
                     <div class="feed-item">
-                      <strong>Lead created from new number</strong>
-                      Ravi called +91 93982 77201.
-                      <time>11 minutes ago</time>
+                      <strong>SURVEY_STARTED · Meera Iyer</strong>
+                      Ravi checked in at the customer location.
+                      <time>42 sec ago · evt_8F20</time>
                     </div>
                     <div class="feed-item">
-                      <strong>Quotation accepted</strong>
-                      Karthik moved to Negotiation.
-                      <time>28 minutes ago</time>
+                      <strong>PROPOSAL_VIEWED · Karthik Rao</strong>
+                      Customer opened proposal v3 worth ₹3.8 lakh.
+                      <time>2 min ago · evt_8F19</time>
+                    </div>
+                    <div class="feed-item">
+                      <strong>ASSIGNMENT_ACCEPTED · Vikram Kumar</strong>
+                      Ravi accepted from mobile; first-touch SLA continues.
+                      <time>4 min ago · evt_8F18</time>
                     </div>
                   </div>
                 </div>
@@ -514,7 +515,7 @@
 
             <div class="kanban">
               <section class="kanban-column">
-                <header class="kanban-heading"><strong>New</strong><span>8</span></header>
+                <header class="kanban-heading"><strong>New / assigned</strong><span>8</span></header>
                 <article class="kanban-card">
                   <button data-lead="ananya" type="button">
                     <span class="badge badge-overdue">SLA overdue</span>
@@ -533,7 +534,7 @@
                 </article>
               </section>
               <section class="kanban-column">
-                <header class="kanban-heading"><strong>Contacted</strong><span>14</span></header>
+                <header class="kanban-heading"><strong>Contacting</strong><span>14</span></header>
                 <article class="kanban-card">
                   <button data-lead="arjun" type="button">
                     <span class="badge badge-contacted">Call completed</span>
@@ -552,10 +553,10 @@
                 </article>
               </section>
               <section class="kanban-column">
-                <header class="kanban-heading"><strong>Qualified</strong><span>16</span></header>
+                <header class="kanban-heading"><strong>Survey</strong><span>16</span></header>
                 <article class="kanban-card">
                   <button data-lead="meera" type="button">
-                    <span class="badge badge-qualified">High intent</span>
+                    <span class="badge badge-qualified">Visit in progress</span>
                     <h3>Meera Iyer</h3>
                     <p>3 kW · Site visit requested</p>
                     <div class="kanban-footer"><span>Today, 2:30 PM</span><span class="avatar blue">RT</span></div>
@@ -563,7 +564,7 @@
                 </article>
                 <article class="kanban-card">
                   <button data-lead="rohan" type="button">
-                    <span class="badge badge-qualified">Roof check</span>
+                    <span class="badge badge-qualified">Scheduled</span>
                     <h3>Rohan Patel</h3>
                     <p>Quotation · 4 kW system</p>
                     <div class="kanban-footer"><span>Friday, 11 AM</span><span class="avatar amber">SM</span></div>
@@ -571,10 +572,10 @@
                 </article>
               </section>
               <section class="kanban-column">
-                <header class="kanban-heading"><strong>Quote prepared</strong><span>11</span></header>
+                <header class="kanban-heading"><strong>Proposal / decision</strong><span>11</span></header>
                 <article class="kanban-card">
                   <button data-lead="karthik" type="button">
-                    <span class="badge badge-quote">₹3.8 lakh</span>
+                    <span class="badge badge-quote">Viewed · ₹3.8 lakh</span>
                     <h3>Karthik Rao</h3>
                     <p>5 kW · EMI requested</p>
                     <div class="kanban-footer"><span>Revision tomorrow</span><span class="avatar">PS</span></div>
@@ -595,22 +596,22 @@
             </header>
             <div class="team-grid">
               <article class="panel rep-card">
-                <div class="rep-head"><span class="avatar large">PS</span><div><h3>Priya Sharma</h3><p>Senior sales representative</p></div></div>
+                <div class="rep-head"><span class="avatar large presence-online">PS</span><div><h3>Priya Sharma</h3><p><span class="presence-text online">Online</span> · Calling Ananya</p></div></div>
                 <div class="rep-stats"><div><strong>14</strong><span>Actions</span></div><div><strong>8</strong><span>Connected</span></div><div><strong>3</strong><span>Qualified</span></div></div>
                 <div class="progress"><span style="width: 88%"></span></div>
               </article>
               <article class="panel rep-card">
-                <div class="rep-head"><span class="avatar large blue">RT</span><div><h3>Ravi Teja</h3><p>Field sales representative</p></div></div>
+                <div class="rep-head"><span class="avatar large blue presence-busy">RT</span><div><h3>Ravi Teja</h3><p><span class="presence-text busy">At site</span> · Meera · 18 min</p></div></div>
                 <div class="rep-stats"><div><strong>11</strong><span>Actions</span></div><div><strong>6</strong><span>Connected</span></div><div><strong>2</strong><span>Qualified</span></div></div>
                 <div class="progress"><span style="width: 72%"></span></div>
               </article>
               <article class="panel rep-card">
-                <div class="rep-head"><span class="avatar large amber">SM</span><div><h3>Sneha Mehta</h3><p>Sales representative</p></div></div>
+                <div class="rep-head"><span class="avatar large amber presence-online">SM</span><div><h3>Sneha Mehta</h3><p><span class="presence-text online">Available</span> · Capacity 4 leads</p></div></div>
                 <div class="rep-stats"><div><strong>09</strong><span>Actions</span></div><div><strong>7</strong><span>Connected</span></div><div><strong>2</strong><span>Qualified</span></div></div>
                 <div class="progress"><span style="width: 65%"></span></div>
               </article>
               <article class="panel rep-card">
-                <div class="rep-head"><span class="avatar large purple">AK</span><div><h3>Ajay Kumar</h3><p>Field sales representative</p></div></div>
+                <div class="rep-head"><span class="avatar large purple presence-away">AK</span><div><h3>Ajay Kumar</h3><p><span class="presence-text away">Offline</span> · Last seen 24 min ago</p></div></div>
                 <div class="rep-stats"><div><strong>08</strong><span>Actions</span></div><div><strong>4</strong><span>Connected</span></div><div><strong>1</strong><span>Qualified</span></div></div>
                 <div class="progress"><span style="width: 51%"></span></div>
               </article>

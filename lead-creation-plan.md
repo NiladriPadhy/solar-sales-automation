@@ -131,6 +131,22 @@ Optional solar qualification fields:
 - Estimated system capacity
 - EMI interest
 - Preferred language
+- Ownership and roof type
+- Usable roof area and shading notes
+- Site survey appointment and completion evidence
+- Recommended system design and expected generation
+- Proposal version, value, delivery and customer-view timestamps
+- Financing requirement, provider and approval state
+- Decision timeline, loss reason and installation handoff ID
+
+Operational fields:
+
+- `AssignmentStatus`, `AssignmentExpiresAtUtc`
+- `PresenceRequired`, `FirstTouchDueAtUtc`
+- `CurrentActionType`, `CurrentActionDueAtUtc`
+- `StageEnteredAtUtc`, `LastContactAtUtc`
+- `LastEventSequence`, `LastEventAtUtc`
+- `SlaState`, `SlaPolicyVersion`
 
 ### LeadSource
 
@@ -195,8 +211,17 @@ Required event types:
 - `CustomerUpdated.v1`
 - `OutboundCallInitiated.v1`
 - `OutboundCallCompleted.v1`
+- `LeadAssigned.v1`, `AssignmentAccepted.v1`, `AssignmentRejected.v1`
+- `FirstTouchSlaStarted.v1`, `SlaAtRisk.v1`, `SlaBreached.v1`
+- `ContactOutcomeRecorded.v1`, `NextActionScheduled.v1`
+- `SurveyScheduled.v1`, `SurveyStarted.v1`, `SurveyCompleted.v1`
+- `ProposalPrepared.v1`, `ProposalSent.v1`, `ProposalViewed.v1`
+- `FinanceRequested.v1`, `FinanceDecisionRecorded.v1`
+- `OpportunityWon.v1`, `OpportunityLost.v1`, `InstallationHandoffCreated.v1`
 
 If one user operation creates both a referral and customer, both events MAY be published. The shared `CorrelationId` and canonical lead key ensure they enrich one lead. Each `EventId` is processed once.
+
+Events that drive a live client also include `aggregateId`, `aggregateVersion`, and a monotonic workspace `sequence`. WebSocket or Server-Sent Events delivery is an optimization, not the write path. A client that sees a sequence gap or reconnects must resume from its cursor and refetch authoritative API state.
 
 ## 7. Workflow A: Referral Submission
 
@@ -307,9 +332,13 @@ Rules:
 Recommended initial stages:
 
 ```text
-New -> Contact Attempted -> Qualified -> Quote Prepared -> Negotiation -> Won
-                                                        \-> Lost
-New/Contact Attempted/Qualified -> Nurture
+New -> Assigned -> Contact Attempted -> Qualified
+                                     -> Survey Scheduled -> Survey Completed
+                                     -> Proposal Prepared -> Proposal Sent
+                                     -> Negotiation -> Finance Approval -> Won
+                                                    \--------------------> Won
+Any active stage -> Nurture or Lost
+Won -> Installation Handoff
 ```
 
 Rules:
@@ -317,6 +346,11 @@ Rules:
 - New referral, registration, or call-created leads start at `New`, unless an existing lead is already further along.
 - `CallInitiated` alone does not advance stage.
 - Connected call plus saved outcome may move to `Contact Attempted` or `Qualified`.
+- `Qualified` requires confirmed need, property fit, ownership, approximate bill/system size, decision timeline, and consent to proceed.
+- `Survey Scheduled` requires a customer-confirmed time slot and assignee.
+- `Survey Completed` requires structured measurements, photos/checklist, and surveyor sign-off.
+- `Proposal Sent` requires an immutable proposal version and delivery channel.
+- `Won` requires accepted commercial terms; financing-dependent deals must first record the finance decision.
 - Every non-terminal stage requires an owner and dated next action.
 - `Won` requires a linked customer and conversion record.
 - `Lost` requires a reason and optional reactivation date.
@@ -328,16 +362,26 @@ Assignment runs only when:
 - Lead has no owner.
 - Existing owner is inactive or outside the workspace/territory.
 - An explicit transfer or rebalancing action occurs.
+- An assignment offer expires without acknowledgement.
+- The owner reports unavailable before first touch.
 
 Suggested priority:
 
 1. Existing relationship owner.
 2. Referrer's mapped sales representative.
 3. Territory/pincode team.
-4. Round-robin among available representatives.
+4. Available representatives ranked by live presence, capacity, skill/language fit, and recent distribution.
 5. Workspace default queue.
 
 Existing ownership MUST not be silently replaced when another source event arrives.
+
+Assignment is a two-step handshake:
+
+1. The engine offers the lead and starts a short acknowledgement SLA.
+2. The representative accepts, rejects with a reason, or times out.
+3. Acceptance starts or continues the first-touch SLA.
+4. Rejection/timeout returns the lead to routing without resetting its original SLA clock.
+5. At-risk and breached events appear in both the representative queue and manager escalation queue.
 
 ## 13. API Surface
 
@@ -351,6 +395,12 @@ POST /api/workspaces/{workspaceId}/leads/{leadId}/activities
 PATCH /api/workspaces/{workspaceId}/leads/{leadId}/activities/{activityId}
 POST /api/workspaces/{workspaceId}/leads/{leadId}/tasks
 POST /api/workspaces/{workspaceId}/leads/{leadId}/assignments
+POST /api/workspaces/{workspaceId}/assignments/{assignmentId}/accept
+POST /api/workspaces/{workspaceId}/assignments/{assignmentId}/reject
+POST /api/workspaces/{workspaceId}/leads/{leadId}/contact-outcomes
+POST /api/workspaces/{workspaceId}/leads/{leadId}/surveys
+POST /api/workspaces/{workspaceId}/leads/{leadId}/proposals
+GET  /api/workspaces/{workspaceId}/events?after={cursor}
 POST /api/integrations/customer-events
 GET  /api/integrations/events/{eventId}/status
 ```
@@ -388,6 +438,9 @@ Technical:
 - Dead-letter queue depth.
 - Reconciliation repairs.
 - Call activity synchronization latency.
+- Event-stream connection count, delivery lag and cursor-gap recovery.
+- Assignment acknowledgement timeout and reassignment rate.
+- Aggregate version conflicts and mobile sync conflict rate.
 
 Business:
 
@@ -398,6 +451,10 @@ Business:
 - Follow-up completion rate.
 - Referral-to-qualified and registration-to-qualified conversion.
 - Outbound new-number call-to-qualified conversion.
+- Qualification-to-survey booking and survey completion time.
+- Survey-to-proposal turnaround and proposal-view latency.
+- Proposal-to-win conversion, financing cycle time and loss reasons.
+- SLA breach rate by source, territory, stage and representative capacity.
 
 ## 17. Testing Strategy
 
@@ -426,6 +483,11 @@ Business:
 5. Offline call activity synchronizes once without duplicates.
 6. Same phone in two workspaces produces isolated lead records.
 7. Failed event is visible, replayable, and reconciled.
+8. A new lead appears in rep and manager clients without manual refresh.
+9. Assignment accept, reject and timeout update both clients and preserve the original SLA clock.
+10. Reconnecting clients recover missed events without duplicate UI actions.
+11. A connected call cannot complete without disposition and next action or terminal reason.
+12. Survey and proposal stages reject transitions without their required evidence.
 
 ## 18. Delivery Slices
 
@@ -452,9 +514,18 @@ Business:
 
 ### Slice 4: Management and automation
 
-- Team queues, SLA exceptions, replay support.
+- Workspace event stream, cursor resume and client reconciliation.
+- Live presence, capacity-aware assignment and acknowledgement handshake.
+- Team queues, stage-specific SLA exceptions, replay support.
 - Notification rules and workspace configuration.
-- KPI dashboards and source conversion.
+- Operational command center plus KPI and source conversion views.
+
+### Slice 5: Solar opportunity execution
+
+- Qualification evidence and customer-confirmed site survey booking.
+- Survey check-in, checklist, photos and recommendation.
+- Versioned proposal generation, delivery and view tracking.
+- Financing decision, negotiation, won/lost evidence and installation handoff.
 
 ## 19. Acceptance Criteria
 
@@ -464,6 +535,10 @@ Business:
 - Existing lead sources, owner, stage, and timeline are preserved and enriched.
 - Every active lead receives an owner or appears in the workspace's unassigned queue.
 - Every active lead has a dated next action or an explicit SLA exception.
+- Assignment, first touch, survey and proposal events update authorized clients without refresh.
+- Assignment timeouts reroute to an available representative without extending the original response SLA.
+- Stage transitions enforce the required evidence and emit one versioned business event.
+- Reconnecting and offline clients reconcile by event cursor and aggregate version without silent overwrites.
 - Integration failures are retried, observable, replayable, and reconciled.
 - Workspace boundaries prevent cross-workspace lead disclosure.
 

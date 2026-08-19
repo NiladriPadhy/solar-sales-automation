@@ -1,6 +1,6 @@
 # Solar Sales Automation Prototype
 
-An interactive product prototype for evaluating Surya Sai Solar's connected sales workflow. It demonstrates how managers and field sales representatives can manage leads, monitor pipelines, make calls, record outcomes, and schedule follow-ups from desktop and mobile experiences.
+An interactive product prototype for evaluating Surya Sai Solar's real-time sales workflow. It demonstrates how live lead events move through assignment, SLA monitoring, representative action, site surveys, proposals, financing, and conversion across connected manager and mobile experiences.
 
 ## Live prototype
 
@@ -8,8 +8,8 @@ An interactive product prototype for evaluating Surya Sai Solar's connected sale
 
 ## Included experiences
 
-- **Manager web portal** for lead oversight, SLA monitoring, assignment, team management, and pipeline tracking.
-- **Sales representative mobile app** for daily queues, lead lookup, calls, outcomes, follow-ups, and offline synchronization simulation.
+- **Manager web portal** for live event monitoring, SLA intervention, capacity-aware assignment, team presence, and pipeline execution.
+- **Sales representative mobile app** for timed assignment acknowledgement, calls, structured outcomes, site visits, next actions, and offline synchronization simulation.
 - **Lead creation workflow documentation** covering workspace-aware identity, phone normalization, deduplication, and reliable synchronization.
 
 ## Run locally

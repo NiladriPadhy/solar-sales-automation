@@ -1,4 +1,15 @@
 const mobileLeads = {
+  sanjay: {
+    name: "Sanjay Verma",
+    phone: "+91 91234 56078",
+    location: "Jubilee Hills",
+    source: "Website enquiry",
+    bill: "₹9,200",
+    system: "Residential rooftop",
+    next: "First call within 10 minutes",
+    badge: "Assigned",
+    event: "Assignment accepted",
+  },
   ananya: {
     name: "Ananya Reddy",
     phone: "+91 98765 43210",
@@ -69,6 +80,21 @@ let isOffline = false;
 let activePhone = "";
 let selectedOutcome = "Connected · qualified";
 let activeStageTab = "all";
+let assignmentSeconds = 90;
+
+const assignmentTimer = window.setInterval(() => {
+  const countdown = document.getElementById("acceptCountdown");
+  if (!countdown) return;
+  assignmentSeconds = Math.max(0, assignmentSeconds - 1);
+  countdown.textContent = `${String(Math.floor(assignmentSeconds / 60)).padStart(2, "0")}:${String(assignmentSeconds % 60).padStart(2, "0")}`;
+  countdown.classList.toggle("timer-critical", assignmentSeconds <= 30);
+  if (assignmentSeconds === 0) {
+    window.clearInterval(assignmentTimer);
+    document.getElementById("incomingAssignment").classList.add("assignment-expired");
+    countdown.textContent = "Reassigned";
+    showMobileToast("No acknowledgement · manager queue notified");
+  }
+}, 1000);
 
 function mobileIcon(name) {
   return `<svg class="icon icon-sm"><use href="#i-${name}"></use></svg>`;
@@ -140,7 +166,46 @@ document.querySelectorAll("[data-mobile-toast]").forEach((button) => {
 });
 
 document.getElementById("mobileBell").addEventListener("click", () => {
-  showMobileToast("3 actions need attention before 2:15 PM");
+  showMobileToast("1 first-touch SLA at risk · 2 visits today");
+});
+
+document.getElementById("acceptAssignment").addEventListener("click", () => {
+  window.clearInterval(assignmentTimer);
+  const assignment = document.getElementById("incomingAssignment");
+  assignment.classList.add("assignment-accepted");
+  assignment.innerHTML =
+    '<div class="incoming-head"><span class="assignment-pulse"></span><strong>Assignment accepted</strong><b>10:00</b></div>' +
+    "<h3>Sanjay Verma · Jubilee Hills</h3>" +
+    "<p>First-touch SLA is running. Customer requested a call now.</p>" +
+    '<button class="btn btn-primary assignment-call" id="startAssignedCall" type="button">' +
+    `${mobileIcon("phone")} Start first call</button>`;
+  document.getElementById("mobileNowCount").textContent = "04";
+  document.getElementById("startAssignedCall").addEventListener("click", () => {
+    openMobileLead("sanjay");
+    showMobileToast("Lead opened · assignment synced to manager");
+  });
+  showMobileToast("Accepted · first-touch countdown started");
+});
+
+document.getElementById("declineAssignment").addEventListener("click", () => {
+  window.clearInterval(assignmentTimer);
+  const assignment = document.getElementById("incomingAssignment");
+  assignment.classList.add("assignment-expired");
+  assignment.innerHTML =
+    "<div class=\"incoming-head\"><strong>Lead returned to routing</strong><b>Reassigning</b></div>" +
+    "<p>Capacity marked unavailable for 15 minutes. The manager can see the handoff.</p>";
+  showMobileToast("Lead safely returned · no SLA time lost");
+});
+
+document.getElementById("visitActionButton").addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  const checkedIn = button.classList.toggle("visit-active");
+  button.innerHTML = `${mobileIcon(checkedIn ? "check" : "location")}${checkedIn ? "Checked in" : "Visit"}`;
+  showMobileToast(
+    checkedIn
+      ? "Survey started · timestamp shared with manager"
+      : "Survey check-in cancelled",
+  );
 });
 
 function filterMobileLeads() {
@@ -250,6 +315,16 @@ document.querySelectorAll("[data-outcome]").forEach((option) => {
       "Not interested": "Lost",
     };
     document.getElementById("outcomeStage").value = stageMap[selectedOutcome];
+    const evidence = document.getElementById("outcomeEvidence");
+    evidence.style.display = selectedOutcome.startsWith("Connected") ? "block" : "none";
+    const nextAction = document.getElementById("outcomeNext");
+    if (selectedOutcome === "No answer") {
+      nextAction.value = "Retry call · Today, 5:30 PM";
+    } else if (selectedOutcome === "Not interested") {
+      nextAction.value = "Close lost · Customer not interested";
+    } else if (selectedOutcome === "Connected · qualified") {
+      nextAction.value = "Site survey · Tomorrow, 11:00 AM · customer confirmed";
+    }
   });
 });
 
@@ -257,7 +332,12 @@ document.getElementById("cancelOutcome").addEventListener("click", closeOutcomeS
 sheetOverlay.addEventListener("click", closeOutcomeSheet);
 
 document.getElementById("saveOutcome").addEventListener("click", () => {
-  const nextAction = document.getElementById("outcomeNext").value;
+  const nextAction = document.getElementById("outcomeNext").value.trim();
+  if (!nextAction) {
+    showMobileToast("Add a dated next action or terminal reason");
+    document.getElementById("outcomeNext").focus();
+    return;
+  }
   closeOutcomeSheet();
   dialPhone.value = "";
   normalizeDialValue();

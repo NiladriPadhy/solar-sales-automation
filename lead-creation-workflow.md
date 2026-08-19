@@ -102,6 +102,74 @@ flowchart LR
     reconciliation -.->|"Repair through ingestion"| integrationQueue
 ```
 
+### 1.1 Real-Time Operating Loop
+
+The ingestion flow above is only the entry point. In production, every accepted business event must immediately update the lead, the responsible representative's work queue, the manager command center, and the SLA engine. Clients receive compact workspace events over WebSocket or Server-Sent Events and refetch authoritative records after reconnecting.
+
+```mermaid
+sequenceDiagram
+    actor Prospect
+    participant Source as Referral / Web / Call Source
+    participant Intake as Lead Intake API
+    participant Bus as Workspace Event Stream
+    participant Rules as Assignment + SLA Engine
+    participant Rep as Representative App
+    participant Manager as Manager Command Center
+    participant Solar as Survey / Quote Services
+
+    Prospect->>Source: Requests solar consultation
+    Source->>Intake: Submit lead with consent and source context
+    Intake->>Intake: Normalize, deduplicate and upsert
+    Intake-->>Bus: LeadCreated or LeadEnriched
+    Bus->>Rules: Evaluate territory, product, capacity and presence
+    Rules-->>Bus: LeadAssigned + FirstTouchSlaStarted
+    Bus-->>Rep: Push assignment with accept-by countdown
+    Bus-->>Manager: Add lead to live operations queue
+
+    alt Representative accepts in time
+        Rep->>Intake: Accept assignment
+        Intake-->>Bus: AssignmentAccepted
+        Rep->>Prospect: Call or WhatsApp with consent
+        Rep->>Intake: Save structured outcome and next action
+        Intake-->>Bus: ContactOutcomeRecorded
+    else No acknowledgement or rep unavailable
+        Rules-->>Bus: AssignmentTimedOut
+        Bus-->>Manager: Escalate SLA risk
+        Rules-->>Bus: LeadReassigned to available rep
+    end
+
+    alt Prospect is qualified
+        Rep->>Solar: Book site survey with confirmed slot
+        Solar-->>Bus: SurveyScheduled
+        Bus-->>Rep: Add route and preparation task
+        Bus-->>Manager: Move opportunity to Survey scheduled
+        Solar-->>Bus: SurveyCompleted + SystemRecommendationReady
+        Solar-->>Bus: ProposalSent
+        Bus-->>Rep: Create proposal follow-up
+        Rep->>Intake: Record negotiation, financing and decision
+        Intake-->>Bus: OpportunityWon or OpportunityLost
+    else Follow-up or unreachable
+        Rep->>Intake: Save callback time or attempt result
+        Rules-->>Bus: NextActionScheduled
+        Rules-->>Rep: Deliver reminder when due
+    end
+```
+
+#### Event-to-screen expectations
+
+| Event | Representative experience | Manager experience | SLA effect |
+| --- | --- | --- | --- |
+| `LeadAssigned` | Push notification and accept/reject card | New item appears with owner and countdown | Starts acknowledgement timer |
+| `AssignmentAccepted` | Lead enters Now queue | Rep shown as engaged | Stops acknowledgement timer; first-touch timer continues |
+| `CallStarted` | In-call state and customer context | Lead marked contacting | Records first-touch attempt |
+| `ContactOutcomeRecorded` | Requires next action before completion | Timeline and pipeline update instantly | Completes or reschedules action |
+| `SurveyScheduled` | Calendar slot, route, checklist | Survey capacity and stage update | Starts survey completion SLA |
+| `ProposalSent` | Follow-up task tied to proposal version | Value and proposal age visible | Starts proposal follow-up SLA |
+| `SlaAtRisk` / `SlaBreached` | Urgent action banner | Escalation queue with reassign action | Escalates according to workspace policy |
+| `SyncConflictDetected` | Shows server/local values and safe resolution | Operational exception visible | Does not silently overwrite newer state |
+
+Real-time delivery is not the source of truth. Every event carries `EventId`, `WorkspaceId`, `AggregateId`, `AggregateVersion`, `OccurredAt`, and `CorrelationId`. The API and event consumer enforce authorization, idempotency, and optimistic concurrency; reconnecting clients resume from their last event cursor and then reconcile against the API.
+
 ## 2. Referral and Proactive Registration Sequence
 
 ```mermaid
@@ -240,21 +308,35 @@ flowchart TD
 ```mermaid
 stateDiagram-v2
     [*] --> New: Referral, registration or new-number call
-    New --> ContactAttempted: Completed contact attempt
+    New --> Assigned: Assignment accepted
+    Assigned --> ContactAttempted: Call, message or visit attempted
+    Assigned --> New: Assignment rejected or timed out
     New --> Nurture: Future interest
     New --> Lost: Invalid or disqualified
     ContactAttempted --> Qualified: Need and intent confirmed
+    ContactAttempted --> ContactAttempted: No answer with retry scheduled
     ContactAttempted --> Nurture: Follow up later
     ContactAttempted --> Lost: Not interested or unreachable policy met
-    Qualified --> QuotePrepared: Quote created
+    Qualified --> SurveyScheduled: Customer confirms survey slot
+    SurveyScheduled --> SurveyCompleted: Site data and photos submitted
+    SurveyScheduled --> Qualified: Survey cancelled or reschedule required
+    SurveyCompleted --> ProposalPrepared: Technical and commercial proposal generated
+    ProposalPrepared --> ProposalSent: Version delivered to customer
+    ProposalSent --> Negotiation: Proposal discussed
+    ProposalSent --> ProposalPrepared: Revision requested
+    ProposalSent --> Nurture: Decision deferred
+    Negotiation --> FinanceApproval: Loan or EMI selected
+    FinanceApproval --> Negotiation: Terms need revision
+    FinanceApproval --> Won: Finance approved and customer accepts
+    Negotiation --> Won: Customer accepts without financing
+    Negotiation --> ProposalPrepared: Scope or pricing revised
     Qualified --> Nurture: Timing deferred
-    QuotePrepared --> Negotiation: Quote discussed
-    QuotePrepared --> Lost: Quote rejected
-    Negotiation --> Won: Customer accepts
+    ProposalSent --> Lost: Proposal rejected
     Negotiation --> Lost: Opportunity closed
     Nurture --> ContactAttempted: Reactivation task due
     Lost --> New: Authorized reopen
-    Won --> [*]
+    Won --> InstallationHandoff: Order and documents verified
+    InstallationHandoff --> [*]
 ```
 
 ## 6. Phone Identity and Deduplication
@@ -310,6 +392,10 @@ flowchart TD
 - A new-number call creates or locally queues the lead before opening the dialer.
 - Every active lead is assigned or visible in the workspace's unassigned queue.
 - Every active lead has a dated next action.
+- Assignment acknowledgement, first contact, survey completion, and proposal follow-up use separate SLA clocks.
+- A stage change and its required business evidence are committed atomically; for example, `SurveyCompleted` requires survey data and `ProposalSent` requires a proposal version.
+- Real-time clients render event updates immediately but refetch authoritative state after reconnect or version gaps.
+- Representatives cannot complete an interaction without a disposition and either a dated next action or a terminal reason.
 - Integration event and mobile activity IDs make every retry idempotent.
 - Failures are retried, dead-lettered, replayable, audited, and reconciled.
 

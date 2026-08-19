@@ -12,6 +12,8 @@ An interactive product prototype for evaluating Surya Sai Solar's real-time sale
 - **Sales representative mobile app** for timed assignment acknowledgement, calls, structured outcomes, site visits, next actions, and offline synchronization simulation.
 - **Lead creation workflow documentation** covering workspace-aware identity, phone normalization, deduplication, and reliable synchronization.
 
+Open the portal and mobile experiences in separate browser tabs to evaluate the connected scenario. Simulated workspace events are shared across tabs so assignment decisions, outcomes, and survey check-ins appear without refresh.
+
 ## Run locally
 
 The prototype is static HTML, CSS, and JavaScript and requires no build step or backend.

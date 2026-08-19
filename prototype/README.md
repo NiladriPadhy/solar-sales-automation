@@ -4,6 +4,8 @@ Static HTML, CSS, and JavaScript prototypes for evaluating the proposed Surya Sa
 
 The experience is organized around a live operating loop: lead events enter a workspace stream, assignment and SLA rules run immediately, representatives acknowledge and act from mobile, and managers intervene through an operational command center.
 
+For the connected demo, open the manager portal and mobile app in separate tabs. Simulate a web enquiry in the portal, then accept it or record activity in mobile; browser-local events update the other view without refresh.
+
 ## Start
 
 From the repository root:

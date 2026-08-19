@@ -151,6 +151,68 @@ function updateLiveOperations() {
 
 window.setInterval(updateLiveOperations, 1000);
 
+function prependLiveEvent(title, description, eventId) {
+  const feed = document.getElementById("liveEventFeed");
+  const item = document.createElement("div");
+  item.className = "feed-item event-new";
+  item.innerHTML =
+    `<strong>${title}</strong>${description}` +
+    `<time>just now · ${String(eventId).slice(0, 12)}</time>`;
+  feed.prepend(item);
+  lastEventSeconds = 0;
+}
+
+window.salesRealtime?.subscribe((event) => {
+  if (event.type === "assignment.accepted") {
+    leadProfiles.sanjay.owner = event.payload.owner;
+    const row = document.querySelector('[data-lead="sanjay"].incoming-row');
+    const badge = row?.querySelector(".badge");
+    if (badge) {
+      badge.textContent = "Accepted by Ravi";
+      badge.className = "badge badge-success";
+    }
+    prependLiveEvent(
+      "ASSIGNMENT_ACCEPTED · Sanjay Verma",
+      "Ravi accepted from mobile. First-touch SLA is now running.",
+      event.eventId,
+    );
+    showToast("Mobile update received · Ravi accepted Sanjay");
+  }
+
+  if (event.type === "assignment.rejected") {
+    const row = document.querySelector('[data-lead="sanjay"].incoming-row');
+    const badge = row?.querySelector(".badge");
+    if (badge) {
+      badge.textContent = "Rerouting";
+      badge.className = "badge badge-due";
+    }
+    prependLiveEvent(
+      "ASSIGNMENT_REJECTED · Sanjay Verma",
+      "Ravi is unavailable. Original first-touch SLA preserved while rerouting.",
+      event.eventId,
+    );
+    showToast("Assignment returned · routing to next available rep");
+  }
+
+  if (event.type === "contact.outcome") {
+    prependLiveEvent(
+      `CONTACT_OUTCOME_RECORDED · ${event.payload.leadName}`,
+      `${event.payload.outcome}. Next: ${event.payload.nextAction}`,
+      event.eventId,
+    );
+    showToast("Rep outcome synchronized to command center");
+  }
+
+  if (event.type === "survey.started") {
+    prependLiveEvent(
+      `SURVEY_STARTED · ${event.payload.leadName}`,
+      `${event.payload.owner} checked in from the customer location.`,
+      event.eventId,
+    );
+    showToast("Live survey check-in received");
+  }
+});
+
 function icon(name) {
   return `<svg class="icon icon-sm"><use href="#i-${name}"></use></svg>`;
 }
@@ -322,19 +384,19 @@ document.getElementById("notificationButton").addEventListener("click", () => {
 document.getElementById("simulateLeadButton").addEventListener("click", (event) => {
   const button = event.currentTarget;
   if (button.disabled) return;
+  if (document.querySelector('[data-lead="sanjay"].incoming-row')) {
+    showToast("Sanjay is already in the live intervention queue");
+    return;
+  }
   button.disabled = true;
   button.textContent = "Receiving event…";
 
   window.setTimeout(() => {
-    const feed = document.getElementById("liveEventFeed");
-    const eventItem = document.createElement("div");
-    eventItem.className = "feed-item event-new";
-    eventItem.innerHTML =
-      "<strong>LEAD_ASSIGNED · Sanjay Verma</strong>" +
-      "Website enquiry matched Jubilee Hills. Finding an available owner." +
-      "<time>just now · evt_8F22</time>";
-    feed.prepend(eventItem);
-    lastEventSeconds = 0;
+    prependLiveEvent(
+      "LEAD_CREATED · Sanjay Verma",
+      "Website enquiry matched Jubilee Hills. Assignment offer sent to Ravi.",
+      "evt_8F22",
+    );
 
     const queue = document.querySelector("#view-dashboard .priority-list");
     const row = document.createElement("button");
@@ -354,6 +416,12 @@ document.getElementById("simulateLeadButton").addEventListener("click", (event) 
     document.getElementById("eventLatency").textContent = "0.8s";
     button.disabled = false;
     button.innerHTML = `${icon("zap")}Simulate web enquiry`;
+    window.salesRealtime?.publish("lead.assigned", {
+      leadId: "sanjay",
+      leadName: "Sanjay Verma",
+      owner: "Ravi Teja",
+      acceptBySeconds: 90,
+    });
     showToast("Live event received · Sanjay entered assignment queue");
   }, 900);
 });

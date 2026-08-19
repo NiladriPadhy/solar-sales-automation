@@ -81,20 +81,27 @@ let activePhone = "";
 let selectedOutcome = "Connected · qualified";
 let activeStageTab = "all";
 let assignmentSeconds = 90;
+let assignmentTimer;
 
-const assignmentTimer = window.setInterval(() => {
-  const countdown = document.getElementById("acceptCountdown");
-  if (!countdown) return;
-  assignmentSeconds = Math.max(0, assignmentSeconds - 1);
-  countdown.textContent = `${String(Math.floor(assignmentSeconds / 60)).padStart(2, "0")}:${String(assignmentSeconds % 60).padStart(2, "0")}`;
-  countdown.classList.toggle("timer-critical", assignmentSeconds <= 30);
-  if (assignmentSeconds === 0) {
-    window.clearInterval(assignmentTimer);
-    document.getElementById("incomingAssignment").classList.add("assignment-expired");
-    countdown.textContent = "Reassigned";
-    showMobileToast("No acknowledgement · manager queue notified");
-  }
-}, 1000);
+function startAssignmentTimer(seconds = 90) {
+  window.clearInterval(assignmentTimer);
+  assignmentSeconds = seconds;
+  assignmentTimer = window.setInterval(() => {
+    const countdown = document.getElementById("acceptCountdown");
+    if (!countdown) return;
+    assignmentSeconds = Math.max(0, assignmentSeconds - 1);
+    countdown.textContent = `${String(Math.floor(assignmentSeconds / 60)).padStart(2, "0")}:${String(assignmentSeconds % 60).padStart(2, "0")}`;
+    countdown.classList.toggle("timer-critical", assignmentSeconds <= 30);
+    if (assignmentSeconds === 0) {
+      window.clearInterval(assignmentTimer);
+      document.getElementById("incomingAssignment").classList.add("assignment-expired");
+      countdown.textContent = "Reassigned";
+      showMobileToast("No acknowledgement · manager queue notified");
+    }
+  }, 1000);
+}
+
+startAssignmentTimer();
 
 function mobileIcon(name) {
   return `<svg class="icon icon-sm"><use href="#i-${name}"></use></svg>`;
@@ -169,7 +176,7 @@ document.getElementById("mobileBell").addEventListener("click", () => {
   showMobileToast("1 first-touch SLA at risk · 2 visits today");
 });
 
-document.getElementById("acceptAssignment").addEventListener("click", () => {
+function acceptAssignment() {
   window.clearInterval(assignmentTimer);
   const assignment = document.getElementById("incomingAssignment");
   assignment.classList.add("assignment-accepted");
@@ -184,17 +191,51 @@ document.getElementById("acceptAssignment").addEventListener("click", () => {
     openMobileLead("sanjay");
     showMobileToast("Lead opened · assignment synced to manager");
   });
+  window.salesRealtime?.publish("assignment.accepted", {
+    leadId: "sanjay",
+    leadName: "Sanjay Verma",
+    owner: "Ravi Teja",
+  });
   showMobileToast("Accepted · first-touch countdown started");
-});
+}
 
-document.getElementById("declineAssignment").addEventListener("click", () => {
+function declineAssignment() {
   window.clearInterval(assignmentTimer);
   const assignment = document.getElementById("incomingAssignment");
   assignment.classList.add("assignment-expired");
   assignment.innerHTML =
     "<div class=\"incoming-head\"><strong>Lead returned to routing</strong><b>Reassigning</b></div>" +
     "<p>Capacity marked unavailable for 15 minutes. The manager can see the handoff.</p>";
+  window.salesRealtime?.publish("assignment.rejected", {
+    leadId: "sanjay",
+    leadName: "Sanjay Verma",
+    owner: "Ravi Teja",
+    reason: "Unavailable",
+  });
   showMobileToast("Lead safely returned · no SLA time lost");
+}
+
+function bindAssignmentActions() {
+  document.getElementById("acceptAssignment")?.addEventListener("click", acceptAssignment);
+  document.getElementById("declineAssignment")?.addEventListener("click", declineAssignment);
+}
+
+bindAssignmentActions();
+
+window.salesRealtime?.subscribe((event) => {
+  if (event.type !== "lead.assigned") return;
+  const assignment = document.getElementById("incomingAssignment");
+  assignment.className = "incoming-assignment";
+  assignment.innerHTML =
+    '<div class="incoming-head"><span class="assignment-pulse"></span><strong>New website enquiry</strong><b id="acceptCountdown">01:30</b></div>' +
+    "<h3>Sanjay Verma · Jubilee Hills</h3>" +
+    "<p>₹9,200 monthly bill · Residential rooftop · High intent</p>" +
+    '<div class="incoming-actions"><button class="btn btn-secondary" id="declineAssignment" type="button">Unavailable</button>' +
+    '<button class="btn btn-primary" id="acceptAssignment" type="button">Accept lead</button></div>';
+  bindAssignmentActions();
+  startAssignmentTimer(event.payload.acceptBySeconds);
+  showScreen("today");
+  showMobileToast("New lead received from live workspace stream");
 });
 
 document.getElementById("visitActionButton").addEventListener("click", (event) => {
@@ -206,6 +247,13 @@ document.getElementById("visitActionButton").addEventListener("click", (event) =
       ? "Survey started · timestamp shared with manager"
       : "Survey check-in cancelled",
   );
+  if (checkedIn) {
+    const lead = Object.values(mobileLeads).find((item) => item.phone === activePhone);
+    window.salesRealtime?.publish("survey.started", {
+      leadName: lead?.name || "Selected lead",
+      owner: "Ravi Teja",
+    });
+  }
 });
 
 function filterMobileLeads() {
@@ -338,6 +386,7 @@ document.getElementById("saveOutcome").addEventListener("click", () => {
     document.getElementById("outcomeNext").focus();
     return;
   }
+  const activeLead = Object.values(mobileLeads).find((lead) => lead.phone === activePhone);
   closeOutcomeSheet();
   dialPhone.value = "";
   normalizeDialValue();
@@ -350,6 +399,12 @@ document.getElementById("saveOutcome").addEventListener("click", () => {
   } else {
     showMobileToast(`${selectedOutcome} · ${nextAction}`);
   }
+  window.salesRealtime?.publish("contact.outcome", {
+    leadName: activeLead?.name || activePhone || "New outbound lead",
+    outcome: selectedOutcome,
+    nextAction,
+    owner: "Ravi Teja",
+  });
   showScreen("today");
 });
 

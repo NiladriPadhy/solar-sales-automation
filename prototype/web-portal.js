@@ -114,7 +114,20 @@ const drawerOverlay = document.getElementById("drawerOverlay");
 const modalOverlay = document.getElementById("modalOverlay");
 const modal = document.getElementById("newLeadModal");
 const toastStack = document.getElementById("toastStack");
+const sidebarToggle = document.getElementById("sidebarToggle");
+const sidebarClose = document.getElementById("sidebarClose");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
 let lastEventSeconds = 0;
+
+function setSidebarOpen(open) {
+  document.body.classList.toggle("sidebar-open", open);
+  sidebarOverlay?.classList.toggle("open", open);
+  sidebarToggle?.setAttribute("aria-expanded", String(open));
+}
+
+function closeSidebar() {
+  setSidebarOpen(false);
+}
 
 function formatTimer(totalSeconds) {
   const seconds = Math.max(0, totalSeconds);
@@ -226,6 +239,7 @@ function activateView(viewName) {
     view.classList.toggle("active", view.id === `view-${viewName}`);
   });
   document.title = `${viewTitles[viewName] ?? "Sales Command"} · Surya Sai Solar`;
+  closeSidebar();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -238,6 +252,7 @@ document.querySelectorAll("[data-view-target]").forEach((button) => {
 });
 
 function openLeadDrawer(leadId) {
+  closeSidebar();
   const profile = leadProfiles[leadId] ?? leadProfiles.ananya;
   drawer.dataset.leadId = leadId;
   const fieldMap = {
@@ -319,6 +334,15 @@ function showToast(message, timeout = 2800) {
 
 document.querySelectorAll("[data-toast]").forEach((button) => {
   button.addEventListener("click", () => showToast(button.dataset.toast));
+});
+
+sidebarToggle?.addEventListener("click", () => {
+  setSidebarOpen(!document.body.classList.contains("sidebar-open"));
+});
+sidebarClose?.addEventListener("click", closeSidebar);
+sidebarOverlay?.addEventListener("click", closeSidebar);
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 980) closeSidebar();
 });
 
 document.getElementById("newLeadForm").addEventListener("submit", (event) => {
@@ -438,6 +462,7 @@ document.getElementById("saveSettingsButton").addEventListener("click", () => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    closeSidebar();
     closeLeadDrawer();
     closeModal();
   }

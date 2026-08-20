@@ -63,6 +63,9 @@
         <circle cx="12" cy="12" r="1"></circle>
         <circle cx="19" cy="12" r="1"></circle>
       </symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24">
+        <path d="M4 6h16M4 12h16M4 18h16"></path>
+      </symbol>
       <symbol id="i-x" viewBox="0 0 24 24">
         <path d="m18 6-12 12M6 6l12 12"></path>
       </symbol>
@@ -79,15 +82,26 @@
       </symbol>
     </svg>
 
+    <div class="overlay" id="sidebarOverlay"></div>
     <div class="web-shell">
-      <aside class="web-sidebar">
-        <a class="web-brand" href="index.html" aria-label="Prototype home">
-          <span class="web-brand-symbol">S</span>
-          <span>
-            <strong>Surya Sai Solar</strong>
-            <small>Sales command</small>
-          </span>
-        </a>
+      <aside class="web-sidebar" id="webSidebar">
+        <div class="sidebar-brand-row">
+          <a class="web-brand" href="index.html" aria-label="Prototype home">
+            <span class="web-brand-symbol">S</span>
+            <span>
+              <strong>Surya Sai Solar</strong>
+              <small>Sales command</small>
+            </span>
+          </a>
+          <button
+            class="btn-icon sidebar-close"
+            id="sidebarClose"
+            type="button"
+            aria-label="Close navigation"
+          >
+            <svg class="icon"><use href="#i-x"></use></svg>
+          </button>
+        </div>
 
         <button class="workspace-switch" id="workspaceSwitch" type="button">
           <svg class="icon icon-sm"><use href="#i-grid"></use></svg>
@@ -145,6 +159,16 @@
 
       <main class="web-main">
         <header class="web-topbar">
+          <button
+            class="btn-icon web-menu-toggle"
+            id="sidebarToggle"
+            type="button"
+            aria-label="Open navigation"
+            aria-controls="webSidebar"
+            aria-expanded="false"
+          >
+            <svg class="icon"><use href="#i-menu"></use></svg>
+          </button>
           <label class="global-search">
             <svg class="icon icon-sm"><use href="#i-search"></use></svg>
             <input
@@ -168,9 +192,14 @@
             >
               <svg class="icon"><use href="#i-bell"></use></svg>
             </button>
-            <button class="btn btn-primary" data-open-modal="newLead" type="button">
+            <button
+              class="btn btn-primary"
+              data-open-modal="newLead"
+              type="button"
+              aria-label="New lead"
+            >
               <svg class="icon icon-sm"><use href="#i-plus"></use></svg>
-              New lead
+              <span class="action-label">New lead</span>
             </button>
           </div>
         </header>

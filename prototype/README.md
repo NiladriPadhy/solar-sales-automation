@@ -34,6 +34,12 @@ The prototypes do not require a build step or backend.
 ## Web Portal Interactions
 
 - Switch between command center, leads, pipeline, team, automation, and settings.
+- Open Quotations from navigation or directly from a lead drawer.
+- Select real solar catalogue items with mapped HSN/SAC, unit prices and GST rates.
+- Change an authorized line price with a mandatory override reason.
+- Create immutable revisions and approve the current commercial version.
+- Review the print-safe HTML quotation that will later become the PDF render source.
+- Simulate WhatsApp Business document sharing and track send events on the quotation timeline.
 - Watch acknowledgement and first-touch countdowns update without refreshing.
 - Simulate an incoming website enquiry and see it enter the event and intervention queues.
 - Monitor live representative presence, survey activity, proposal views, and SLA breaches.

@@ -73,6 +73,10 @@
         <path d="M12 3v12m0 0 4-4m-4 4-4-4"></path>
         <path d="M4 19h16"></path>
       </symbol>
+      <symbol id="i-file" viewBox="0 0 24 24">
+        <path d="M6 2h8l4 4v16H6z"></path>
+        <path d="M14 2v5h5M9 12h6M9 16h6"></path>
+      </symbol>
     </svg>
 
     <div class="web-shell">
@@ -109,6 +113,11 @@
             <svg class="icon"><use href="#i-filter"></use></svg>
             Pipeline
           </button>
+          <button class="nav-item" data-view="quotations" type="button">
+            <svg class="icon"><use href="#i-file"></use></svg>
+            Quotations
+            <span class="nav-count">11</span>
+          </button>
           <button class="nav-item" data-view="team" type="button">
             <svg class="icon"><use href="#i-chart"></use></svg>
             Team activity
@@ -129,7 +138,7 @@
           <span class="avatar">NS</span>
           <span>
             <strong>Niladri Saha</strong>
-            <small>Workspace manager</small>
+            <small>Sales administrator</small>
           </span>
         </div>
       </aside>
@@ -585,6 +594,228 @@
             </div>
           </section>
 
+          <section class="view" id="view-quotations">
+            <header class="page-heading">
+              <div>
+                <p class="eyebrow">Lead-linked commercial proposal</p>
+                <h1>Quotation generation</h1>
+                <p>Build a GST-ready solar quotation, revise it, preview the HTML, and share the approved version.</p>
+              </div>
+              <div class="page-actions">
+                <span class="badge badge-neutral" id="quoteStatusBadge">Draft · v1</span>
+                <button class="btn btn-secondary" id="saveQuotationButton" type="button">Save draft</button>
+                <button class="btn btn-primary" id="shareQuotationButton" type="button">
+                  <svg class="icon icon-sm"><use href="#i-message"></use></svg>
+                  Share via WhatsApp
+                </button>
+              </div>
+            </header>
+
+            <div class="quotation-workspace">
+              <div class="quotation-builder">
+                <article class="panel quotation-section">
+                  <header class="panel-header">
+                    <div><h2>Lead and site</h2><p>Commercial identity and surveyed system requirements</p></div>
+                  </header>
+                  <div class="panel-body form-grid quotation-form">
+                    <div class="form-field full">
+                      <label for="quoteLeadSelect">Lead</label>
+                      <select id="quoteLeadSelect">
+                        <option value="meera">Meera Iyer · +91 99630 88442</option>
+                        <option value="rohan">Rohan Patel · +91 98490 12678</option>
+                        <option value="karthik">Karthik Rao · +91 93982 77201</option>
+                        <option value="ananya">Ananya Reddy · +91 98765 43210</option>
+                      </select>
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteCustomerGstin">Customer GSTIN</label>
+                      <input id="quoteCustomerGstin" maxlength="15" placeholder="Required only for registered buyer" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteSitePincode">Site PIN code</label>
+                      <input id="quoteSitePincode" value="500032" inputmode="numeric" maxlength="6" />
+                    </div>
+                    <div class="form-field full">
+                      <label for="quoteSiteAddress">Installation site address</label>
+                      <input id="quoteSiteAddress" value="Gachibowli, Hyderabad, Telangana" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteSystemCapacity">Proposed capacity (kWp)</label>
+                      <input id="quoteSystemCapacity" type="number" value="3.3" min="0.1" step="0.1" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteSystemType">System type</label>
+                      <select id="quoteSystemType"><option>On-grid rooftop</option><option>Hybrid rooftop</option><option>Off-grid rooftop</option></select>
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteConnectionPhase">Grid connection</label>
+                      <select id="quoteConnectionPhase"><option>Single phase</option><option>Three phase</option></select>
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteDiscom">DISCOM</label>
+                      <select id="quoteDiscom"><option>TGSPDCL</option><option>TGNPDCL</option></select>
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteSanctionedLoad">Sanctioned load (kW)</label>
+                      <input id="quoteSanctionedLoad" type="number" value="5" min="0" step="0.1" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteAnnualGeneration">Estimated generation (kWh/year)</label>
+                      <input id="quoteAnnualGeneration" type="number" value="4950" min="0" step="1" />
+                    </div>
+                  </div>
+                </article>
+
+                <article class="panel quotation-section">
+                  <header class="panel-header">
+                    <div><h2>Quotation identity and tax</h2><p>Sequential reference, validity, and place of supply</p></div>
+                  </header>
+                  <div class="panel-body form-grid quotation-form">
+                    <div class="form-field">
+                      <label for="quoteSellerName">Seller legal name</label>
+                      <input id="quoteSellerName" value="Surya Sai Solar" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteSellerGstin">Seller GSTIN</label>
+                      <input id="quoteSellerGstin" maxlength="15" placeholder="Enter registered GSTIN" />
+                    </div>
+                    <div class="form-field full">
+                      <label for="quoteSellerAddress">Registered office address</label>
+                      <input id="quoteSellerAddress" value="Hyderabad, Telangana" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteSellerEmail">Sales email</label>
+                      <input id="quoteSellerEmail" type="email" placeholder="Enter quotation contact email" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteSellerPhone">Sales phone</label>
+                      <input id="quoteSellerPhone" type="tel" placeholder="Enter quotation contact number" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteNumber">Quotation number</label>
+                      <input id="quoteNumber" value="SSS/QTN/2026-27/0042" readonly />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteRevision">Revision</label>
+                      <input id="quoteRevision" value="01" readonly />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteDate">Quotation date</label>
+                      <input id="quoteDate" type="date" value="2026-08-20" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteValidUntil">Valid until</label>
+                      <input id="quoteValidUntil" type="date" value="2026-09-04" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quotePlaceOfSupply">Place of supply</label>
+                      <select id="quotePlaceOfSupply"><option value="Telangana">Telangana (36)</option><option value="Andhra Pradesh">Andhra Pradesh (37)</option><option value="Karnataka">Karnataka (29)</option></select>
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteTaxMode">GST treatment</label>
+                      <select id="quoteTaxMode"><option value="intra">CGST + SGST (intra-state)</option><option value="inter">IGST (inter-state)</option></select>
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteBankName">Bank name</label>
+                      <input id="quoteBankName" placeholder="Enter beneficiary bank" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteBankAccount">Account number</label>
+                      <input id="quoteBankAccount" inputmode="numeric" placeholder="Enter account number" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteBankIfsc">IFSC</label>
+                      <input id="quoteBankIfsc" maxlength="11" placeholder="Enter IFSC" />
+                    </div>
+                  </div>
+                </article>
+
+                <article class="panel quotation-section">
+                  <header class="panel-header">
+                    <div><h2>Bill of quantities</h2><p>Select catalogue items; mapped rates remain editable for an authorized quotation</p></div>
+                    <button class="btn btn-secondary" id="addQuoteItemButton" type="button">
+                      <svg class="icon icon-sm"><use href="#i-plus"></use></svg>
+                      Add item
+                    </button>
+                  </header>
+                  <div class="quote-items-wrap">
+                    <table class="quote-items-table">
+                      <thead><tr><th>Item and specification</th><th>HSN/SAC</th><th>Qty</th><th>Unit</th><th>Rate (₹)</th><th>GST</th><th>Amount</th><th></th></tr></thead>
+                      <tbody id="quoteItemsBody"></tbody>
+                    </table>
+                  </div>
+                  <div class="quote-adjustments">
+                    <label>Commercial discount (₹)<input id="quoteDiscount" type="number" value="0" min="0" step="100" /></label>
+                    <label>Expected subsidy (₹)<input id="quoteSubsidy" type="number" value="78000" min="0" step="1000" /></label>
+                    <p>Subsidy is displayed separately as an eligibility-based customer benefit; it does not reduce taxable value.</p>
+                  </div>
+                </article>
+
+                <article class="panel quotation-section">
+                  <header class="panel-header"><div><h2>Scope, payment, and warranty</h2><p>Terms included in the customer-facing quotation</p></div></header>
+                  <div class="panel-body quotation-text-fields">
+                    <div class="form-field">
+                      <label for="quoteScope">Included scope</label>
+                      <textarea id="quoteScope">Engineering and system design
+Supply of listed equipment
+Rooftop mounting, electrical installation, testing and commissioning
+Net-metering application coordination with DISCOM
+Remote monitoring configuration and customer handover</textarea>
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteExclusions">Exclusions</label>
+                      <textarea id="quoteExclusions">Structural strengthening or major civil work
+DISCOM statutory fees, meter charges, or security deposit
+Roof waterproofing and repairs unrelated to installation
+Any work or material not expressly included in the bill of quantities</textarea>
+                    </div>
+                    <div class="form-field">
+                      <label for="quotePaymentTerms">Payment milestones</label>
+                      <textarea id="quotePaymentTerms">40% with accepted quotation and work order
+50% before dispatch of equipment to site
+10% after installation, testing and commissioning</textarea>
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteWarrantyTerms">Warranty</label>
+                      <textarea id="quoteWarrantyTerms">PV modules: manufacturer product and performance warranty as specified in the selected item
+Inverter: manufacturer warranty as specified in the selected item
+Mounting structure: 10-year corrosion warranty
+Installation workmanship: 2 years from commissioning</textarea>
+                    </div>
+                    <div class="form-field">
+                      <label for="quoteDeliveryTimeline">Execution timeline</label>
+                      <input id="quoteDeliveryTimeline" value="4–6 weeks from advance payment, approved design, and site readiness" />
+                    </div>
+                    <div class="form-field">
+                      <label for="quotePriceOverrideReason">Price override reason</label>
+                      <input id="quotePriceOverrideReason" placeholder="Required when a mapped catalogue rate is changed" />
+                    </div>
+                  </div>
+                  <footer class="quotation-actions">
+                    <button class="btn btn-secondary" id="createRevisionButton" type="button">Create revision</button>
+                    <button class="btn btn-dark" id="approveQuotationButton" type="button">Approve current version</button>
+                  </footer>
+                </article>
+
+                <article class="panel quotation-section">
+                  <header class="panel-header"><div><h2>Quotation activity</h2><p>Immutable business events for this lead and quotation version</p></div></header>
+                  <div class="panel-body activity-feed quote-event-feed" id="quotationEventFeed">
+                    <div class="feed-item"><strong>QUOTATION_DRAFT_CREATED · v1</strong>Created from Meera Iyer’s completed site survey.<time>Today, 12:48 PM · qevt_4201</time></div>
+                    <div class="feed-item"><strong>CATALOGUE_PRICES_APPLIED</strong>Eleven selected items mapped to the active Telangana residential price book.<time>Today, 12:48 PM · qevt_4200</time></div>
+                  </div>
+                </article>
+              </div>
+
+              <aside class="quotation-preview-column">
+                <div class="preview-toolbar">
+                  <div><strong>HTML quotation preview</strong><span id="previewVersionLabel">Draft · revision 01</span></div>
+                  <button class="btn btn-ghost" id="printPreviewButton" type="button"><svg class="icon icon-sm"><use href="#i-download"></use></svg>Print / PDF</button>
+                </div>
+                <article class="quotation-document" id="quotationPreview"></article>
+              </aside>
+            </div>
+          </section>
+
           <section class="view" id="view-team">
             <header class="page-heading">
               <div>
@@ -738,6 +969,7 @@
           <button class="quick-action" data-toast="Call started and activity created" type="button"><svg class="icon"><use href="#i-phone"></use></svg>Call</button>
           <button class="quick-action" data-toast="WhatsApp conversation opened" type="button"><svg class="icon"><use href="#i-message"></use></svg>WhatsApp</button>
           <button class="quick-action" data-toast="Follow-up task added" type="button"><svg class="icon"><use href="#i-calendar"></use></svg>Follow-up</button>
+          <button class="quick-action" id="drawerQuoteButton" type="button"><svg class="icon"><use href="#i-file"></use></svg>Quotation</button>
           <button class="quick-action" data-toast="Note added to timeline" type="button"><svg class="icon"><use href="#i-plus"></use></svg>Add note</button>
         </div>
         <div class="info-grid">
@@ -817,5 +1049,6 @@
     <div class="toast-stack" id="toastStack" aria-live="polite"></div>
     <script src="realtime-sim.js"></script>
     <script src="web-portal.js"></script>
+    <script src="quotation.js"></script>
   </body>
 </html>

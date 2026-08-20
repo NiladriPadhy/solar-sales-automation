@@ -552,3 +552,180 @@ Business:
 6. Android distribution model and whether outside-app call detection is legally and technically allowed.
 7. Customer and lead data deletion/retention policy.
 
+## 21. Quotation Generation, Revision, and Sharing
+
+### 21.1 Purpose and operating rule
+
+An administrator or authorized sales user can generate a quotation only from an existing workspace lead. The quotation is a versioned commercial aggregate, not a mutable text attachment. It references the source lead, site survey, active catalogue and tax-policy versions used to calculate the offer.
+
+Every approved or shared revision is immutable. Changing its scope, item, quantity, mapped rate, discount, tax treatment, validity, payment terms, warranty, or customer/site identity creates a new draft revision linked to the prior revision.
+
+### 21.2 Quotation record
+
+Required identity:
+
+- `QuotationId`, `WorkspaceId`, `LeadId`.
+- Unique sequential `QuotationNumber` and integer `RevisionNumber`.
+- `Status`: `Draft`, `PendingApproval`, `Approved`, `Shared`, `Viewed`, `Accepted`, `Rejected`, `Expired`, or `Superseded`.
+- `QuotationDate`, `ValidUntil`, `Currency`.
+- `CreatedBy`, `ApprovedBy`, `CreatedAtUtc`, `ApprovedAtUtc`, `Version`.
+- `SourceSurveyId`, `CatalogueVersionId`, `TaxPolicyVersionId`.
+
+Seller and buyer:
+
+- Seller legal name, registered address, state code, GSTIN, quotation email and phone.
+- Customer legal/display name, phone, billing address, installation address, state/PIN and GSTIN when registered.
+- Place of supply and intra-state/inter-state GST treatment.
+
+Solar system summary:
+
+- Proposed capacity in kWp, system type, grid phase and DISCOM.
+- Sanctioned load and estimated annual generation with the calculation basis.
+- Surveyed roof/site reference and system-design reference.
+
+Commercial content:
+
+- Itemized BOQ, subtotal, authorized discount, taxable value, GST breakup and total quotation value.
+- Expected subsidy as a separate informational benefit; it MUST NOT silently reduce seller taxable value or receivable.
+- Payment milestones, execution timeline, included scope, exclusions, warranty and acceptance section.
+- Beneficiary bank details where payment instructions are included.
+
+### 21.3 Catalogue item and mapped pricing
+
+Each selectable item is an active workspace catalogue entry:
+
+```text
+CatalogueItemId
+ItemType
+DisplayName
+TechnicalSpecification
+HSNOrSAC
+UnitOfMeasure
+MappedUnitPrice
+GSTRate
+PriceBookId
+EffectiveFrom / EffectiveUntil
+ManufacturerWarranty
+PerformanceWarranty
+IsActive
+```
+
+The initial quotation rate is copied from the selected price-book version. An authorized user MAY override it, but the line stores both `MappedUnitPrice` and `QuotedUnitPrice`. An override requires `OverrideReason`, actor, timestamp, and optional approver according to the workspace discount/margin policy.
+
+Changing a catalogue item's mapped price never changes an existing quotation revision. Recalculation occurs only when the user explicitly refreshes a draft against a newer price book.
+
+### 21.4 Quotation line and calculation
+
+Each line stores:
+
+- `QuotationLineId`, sequence and selected `CatalogueItemId`.
+- Frozen item name and technical specification.
+- HSN/SAC, quantity, unit of measure and quoted unit rate.
+- Discount, taxable value, GST rate and line tax.
+- Line amount before tax and line total.
+
+Calculation order:
+
+1. `LineAmount = Quantity × QuotedUnitPrice`.
+2. Apply line and quotation-level commercial discount according to policy.
+3. Calculate taxable value after discount.
+4. Apply the tax rate from the versioned tax policy.
+5. Split tax into CGST/SGST for intra-state supply or IGST for inter-state supply.
+6. Sum taxable value and tax into the quotation total.
+7. Show eligible subsidy separately and calculate an informational estimated net customer cost.
+
+GST rates and composite-supply treatment MUST come from an effective-dated tax master reviewed by finance. They must not be hard-coded into production UI or inferred from old quotations.
+
+### 21.5 Solar BOQ and commercial sections
+
+The catalogue supports real solar goods and services such as PV modules, inverter, mounting structure, DC/AC cables, DCDB/ACDB, earthing, lightning protection, installation/commissioning, monitoring, and net-metering coordination. A selected item contains its precise specification; the quotation must not use descriptions such as “standard material” or “branded panel”.
+
+The customer-facing document includes:
+
+- Exact module technology, wattage, quantity, listing/certification and warranty.
+- Inverter capacity, phase, MPPT/protection/monitoring specification and warranty.
+- Mounting material, coating, roof/design basis and structural exclusions.
+- Cable ratings, electrical protection, earthing and lightning-protection scope.
+- Installation, commissioning, handover and net-metering responsibility.
+- Explicit exclusions, statutory charges, site-readiness assumptions and change-control rule.
+- Payment milestones tied to work-order acceptance, dispatch/delivery and commissioning.
+
+### 21.6 HTML template and future PDF export
+
+The authoritative render input is a saved quotation revision. The server renders a deterministic HTML document from that revision and stores:
+
+- Template name and version.
+- Rendered-content hash.
+- Rendered HTML object reference.
+- PDF object reference when PDF export is implemented.
+- Rendered timestamp and actor/service identity.
+
+The HTML template is print-safe and contains no editable controls. PDF generation later consumes the same saved HTML/template input, so the preview and shared PDF cannot calculate different totals.
+
+### 21.7 WhatsApp Business sharing
+
+Only an approved revision can be shared. The implementation flow is:
+
+1. Render the approved quotation HTML and export it as PDF.
+2. Upload the PDF to the WhatsApp Business Platform and retain the media ID.
+3. Send it within an active customer-service conversation as a document message, or use an approved utility template with a `DOCUMENT` header when outside the service window.
+4. Store WhatsApp message ID, recipient, template name/language, quotation revision and send timestamp.
+5. Consume sent, delivered, read and failed webhooks and append them to the lead and quotation timelines.
+6. Reject or retry transient failures idempotently without creating duplicate messages.
+
+The prototype simulates this lifecycle; production sharing requires configured WhatsApp Business credentials, an approved message template, customer communication consent and a generated PDF.
+
+### 21.8 Events
+
+Required versioned business events:
+
+- `QuotationDraftCreated.v1`
+- `QuotationItemAdded.v1`, `QuotationItemRemoved.v1`
+- `QuotationPriceOverridden.v1`
+- `QuotationRevisionCreated.v1`
+- `QuotationApprovalRequested.v1`, `QuotationApproved.v1`, `QuotationApprovalRejected.v1`
+- `QuotationHtmlRendered.v1`, `QuotationPdfGenerated.v1`
+- `QuotationShareRequested.v1`
+- `QuotationWhatsAppSent.v1`, `QuotationWhatsAppDelivered.v1`, `QuotationWhatsAppRead.v1`, `QuotationWhatsAppFailed.v1`
+- `QuotationViewed.v1`, `QuotationAccepted.v1`, `QuotationRejected.v1`, `QuotationExpired.v1`
+
+Every event includes `QuotationId`, `RevisionNumber`, `LeadId`, actor, correlation ID and aggregate version. Price override events additionally include mapped rate, quoted rate and reason.
+
+### 21.9 API surface
+
+```text
+GET  /api/workspaces/{workspaceId}/catalogue/items?effectiveAt={timestamp}
+POST /api/workspaces/{workspaceId}/leads/{leadId}/quotations
+GET  /api/workspaces/{workspaceId}/quotations/{quotationId}
+PATCH /api/workspaces/{workspaceId}/quotations/{quotationId}/draft
+POST /api/workspaces/{workspaceId}/quotations/{quotationId}/revisions
+POST /api/workspaces/{workspaceId}/quotations/{quotationId}/approve
+POST /api/workspaces/{workspaceId}/quotations/{quotationId}/render
+POST /api/workspaces/{workspaceId}/quotations/{quotationId}/share/whatsapp
+GET  /api/workspaces/{workspaceId}/quotations/{quotationId}/events
+POST /api/integrations/whatsapp/webhooks
+```
+
+Mutation endpoints require idempotency keys and expected aggregate versions.
+
+### 21.10 Acceptance criteria
+
+- A quotation cannot be created without an authorized workspace lead.
+- Selecting an item copies its active mapped price, HSN/SAC, unit, tax and specification.
+- A price override records the original price, new price, reason and actor.
+- Approved/shared revisions remain unchanged; edits create a new revision.
+- Totals use the same calculation service for editor, HTML preview and future PDF.
+- Approval is blocked when seller GSTIN, customer/site identity, validity, item details or override justification are invalid.
+- Subsidy is shown as conditional information and does not alter taxable value.
+- Only an approved revision can be shared through WhatsApp Business.
+- Send, delivery, read and failure events are visible on both lead and quotation timelines.
+- A regenerated document records the template version and content hash.
+
+### 21.11 Reference basis
+
+- [CBIC: Tax Invoice and other GST instruments](https://cbic-gst.gov.in/hindi/pdf/e-version-gst-fliers/tax-invoice-efliers.pdf) — invoice particulars used as the GST-ready reference for later quotation-to-invoice conversion.
+- [Meta: WhatsApp template components](https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/components/) — document-header template behavior.
+- [Meta: WhatsApp document messages](https://developers.facebook.com/docs/whatsapp/cloud-api/messages/document-messages/) — document upload/send model and message identifiers.
+
+There is no government-prescribed quotation layout. The module uses standard Indian commercial fields and solar EPC content while treating tax, subsidy and warranty values as versioned business configuration.
+

@@ -399,3 +399,99 @@ flowchart TD
 - Integration event and mobile activity IDs make every retry idempotent.
 - Failures are retried, dead-lettered, replayable, audited, and reconciled.
 
+## 9. Lead-to-Quotation Generation and WhatsApp Sharing
+
+```mermaid
+sequenceDiagram
+    actor Admin as Administrator / Authorized Sales User
+    participant Portal as Admin Quotation Module
+    participant QuoteApi as Quotation API
+    participant Catalogue as Versioned Catalogue + Price Book
+    participant Tax as Effective Tax Policy
+    participant Renderer as HTML / PDF Renderer
+    participant WhatsApp as WhatsApp Business Platform
+    participant Events as Workspace Event Stream
+    participant Customer
+
+    Admin->>Portal: Open quotation for an existing lead
+    Portal->>QuoteApi: Create draft with LeadId and SurveyId
+    QuoteApi->>Catalogue: Load active selectable items and mapped prices
+    QuoteApi->>Tax: Load GST policy for effective date and place of supply
+    QuoteApi-->>Portal: Draft, catalogue version and tax-policy version
+
+    loop Build bill of quantities
+        Admin->>Portal: Select item and quantity
+        Portal->>Portal: Apply mapped specification, HSN/SAC, unit, rate and GST
+        opt Authorized price change
+            Admin->>Portal: Enter quoted rate and override reason
+            Portal->>QuoteApi: Record mapped rate, quoted rate, reason and actor
+            QuoteApi-->>Events: QuotationPriceOverridden
+        end
+    end
+
+    Admin->>Portal: Enter scope, exclusions, validity, payment and warranty
+    Portal->>QuoteApi: Save draft with expected aggregate version
+    QuoteApi->>QuoteApi: Recalculate subtotal, discount, taxable value, GST and total
+    QuoteApi-->>Events: QuotationDraftSaved
+    QuoteApi->>Renderer: Render versioned HTML preview
+    Renderer-->>Portal: Deterministic customer-facing HTML
+
+    Admin->>QuoteApi: Approve current revision
+    QuoteApi->>QuoteApi: Validate GST identity, site, items, price overrides and totals
+    QuoteApi-->>Events: QuotationApproved
+
+    Admin->>QuoteApi: Share approved revision by WhatsApp
+    QuoteApi->>Renderer: Export approved HTML revision as PDF
+    Renderer-->>QuoteApi: PDF media object and content hash
+    QuoteApi->>WhatsApp: Upload PDF and send document/template message
+    WhatsApp-->>QuoteApi: Message ID
+    QuoteApi-->>Events: QuotationWhatsAppSent
+    WhatsApp-->>Customer: Deliver quotation PDF
+    WhatsApp-->>QuoteApi: Delivered / read / failed webhook
+    QuoteApi-->>Events: Append delivery event to quote and lead timelines
+
+    opt User modifies approved or shared quotation
+        Admin->>QuoteApi: Create revision from locked version
+        QuoteApi-->>Events: QuotationRevisionCreated
+        QuoteApi-->>Portal: New editable draft; prior revision unchanged
+    end
+```
+
+### 9.1 Quotation state
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft: Create from lead
+    Draft --> Draft: Add/remove items or save terms
+    Draft --> PendingApproval: Submit for approval
+    PendingApproval --> Draft: Rejected with reason
+    PendingApproval --> Approved: Commercial and tax validation passes
+    Approved --> Shared: PDF sent through approved channel
+    Shared --> Viewed: WhatsApp read or customer portal view
+    Shared --> Accepted: Customer accepts before expiry
+    Viewed --> Accepted: Customer accepts before expiry
+    Shared --> Rejected: Customer rejects
+    Viewed --> Rejected: Customer rejects
+    Approved --> Expired: Valid-until date passes
+    Shared --> Expired: Valid-until date passes
+    Viewed --> Expired: Valid-until date passes
+    Approved --> Superseded: Authorized edit creates revision
+    Shared --> Superseded: Authorized edit creates revision
+    Viewed --> Superseded: Authorized edit creates revision
+    Superseded --> Draft: New revision
+    Accepted --> [*]
+    Rejected --> [*]
+    Expired --> [*]
+```
+
+### 9.2 Calculation and audit rules
+
+- Catalogue selection freezes item name, specification, HSN/SAC, unit, mapped price and catalogue version into the quotation line.
+- Authorized price changes preserve both mapped and quoted rates and require a reason.
+- Discount reduces taxable value before tax; CGST/SGST or IGST is selected from place of supply.
+- Tax policy is effective-dated configuration, not hard-coded user-interface logic.
+- Expected subsidy is informational and conditional; it does not reduce seller taxable value.
+- Preview, approval and future PDF export use one server-side calculation and render input.
+- Approved/shared revisions are immutable. Any commercial edit creates and audits a new revision.
+- WhatsApp send, delivery, read and failure webhooks append events to both the quotation and lead timelines.
+

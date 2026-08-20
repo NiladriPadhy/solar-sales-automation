@@ -26,7 +26,14 @@ flowchart LR
         qualify["Qualified"]
         survey["Survey scheduled"]
         surveyDone["Survey completed"]
-        proposal["Proposal sent"]
+        selectItems["Select catalogue items and mapped prices"]
+        priceReview{"Any price override?"}
+        override["Record quoted price, reason and actor"]
+        quoteDraft["Versioned quotation draft"]
+        approve["Validate and approve locked revision"]
+        html["Render deterministic HTML and PDF"]
+        whatsapp["Share PDF via WhatsApp Business"]
+        delivery["Track sent, delivered, read or failed"]
         decision{"Customer decision"}
         finance["Finance approval"]
         won["Won + installation handoff"]
@@ -62,15 +69,23 @@ flowchart LR
     outcome -->|"Disqualified"| lost
     qualify --> survey
     survey --> surveyDone
-    surveyDone --> proposal
-    proposal --> decision
-    decision -->|"Revise"| proposal
+    surveyDone --> selectItems
+    selectItems --> priceReview
+    priceReview -->|"No"| quoteDraft
+    priceReview -->|"Yes"| override
+    override --> quoteDraft
+    quoteDraft --> approve
+    approve --> html
+    html --> whatsapp
+    whatsapp --> delivery
+    delivery --> decision
+    decision -->|"Revise"| quoteDraft
     decision -->|"Finance needed"| finance
     decision -->|"Accepted"| won
     decision -->|"Deferred"| nurture
     decision -->|"Rejected"| lost
     finance -->|"Approved"| won
-    finance -->|"Revise terms"| proposal
+    finance -->|"Revise terms"| quoteDraft
     nurture -->|"Task due"| rep
     rep -.->|"Offline writes"| offline
     offline -.->|"Idempotent sync"| outbox

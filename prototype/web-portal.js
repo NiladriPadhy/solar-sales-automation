@@ -101,6 +101,7 @@ const viewTitles = {
   dashboard: "Command center",
   leads: "Lead workspace",
   pipeline: "Pipeline board",
+  quotations: "Quotation generation",
   team: "Team activity",
   automation: "Automation",
   settings: "Workspace settings",
@@ -238,6 +239,7 @@ document.querySelectorAll("[data-view-target]").forEach((button) => {
 
 function openLeadDrawer(leadId) {
   const profile = leadProfiles[leadId] ?? leadProfiles.ananya;
+  drawer.dataset.leadId = leadId;
   const fieldMap = {
     drawerName: profile.name,
     drawerAvatar: profile.initials,

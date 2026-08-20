@@ -9,6 +9,7 @@ An interactive product prototype for evaluating Surya Sai Solar's real-time sale
 ## Included experiences
 
 - **Manager web portal** for live event monitoring, SLA intervention, capacity-aware assignment, team presence, and pipeline execution.
+- **Quotation generation module** for lead-linked solar BOQs, mapped catalogue pricing, authorized price overrides, GST calculations, versioned revisions, HTML preview, and tracked WhatsApp Business sharing.
 - **Sales representative mobile app** for timed assignment acknowledgement, calls, structured outcomes, site visits, next actions, and offline synchronization simulation.
 - **Lead creation workflow documentation** covering workspace-aware identity, phone normalization, deduplication, and reliable synchronization.
 
